@@ -150,3 +150,68 @@ export interface WalletValidationResponse {
   address: string;
   valid: boolean;
 }
+
+// Wallet Balance Types
+export interface TokenInfo {
+  name: string;
+  symbol: string;
+  address: string;
+  decimals: number;
+  type: string;
+  tag: string;
+}
+
+export interface WalletBalanceRequest {
+  network: SupportedNetwork;
+  address: string;
+  mode?: 'mainnet' | 'testnet';
+  tokens?: TokenInfo[];
+}
+
+export interface BalanceData {
+  name: string;
+  symbol: string;
+  balance: string;
+  decimals: number;
+  isToken: boolean;
+}
+
+export interface WalletBalanceResponse {
+  success: boolean;
+  message: string;
+  network: SupportedNetwork;
+  address: string;
+  data: BalanceData[];
+}
+
+// Wallet Create Types
+export interface CreateWalletRequest {
+  network: SupportedNetwork;
+}
+
+export interface CreateWalletResponse {
+  success: boolean;
+  message: string;
+  network: SupportedNetwork;
+  address: string;
+  key: string;
+  mnemonic: string;
+}
+
+// Send Transaction Types
+export interface SendTransactionRequest {
+  rawTx: string;
+  network: SupportedNetwork;
+  mode?: 'mainnet' | 'testnet';
+}
+
+export interface SendTransactionData {
+  txId: string;
+}
+
+export interface SendTransactionResponse {
+  success: boolean;
+  message: string;
+  network: SupportedNetwork;
+  data: SendTransactionData;
+}

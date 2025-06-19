@@ -89,6 +89,24 @@ describe('CryptoWebApiClient', () => {
     });
   });
 
+  describe('getWalletBalance endpoint', () => {
+    it('should have getWalletBalance method', () => {
+      expect(typeof client.getWalletBalance).toBe('function');
+    });
+  });
+
+  describe('createWallet endpoint', () => {
+    it('should have createWallet method', () => {
+      expect(typeof client.createWallet).toBe('function');
+    });
+  });
+
+  describe('sendTransaction endpoint', () => {
+    it('should have sendTransaction method', () => {
+      expect(typeof client.sendTransaction).toBe('function');
+    });
+  });
+
   describe('error handling', () => {
     it('should handle authentication errors', () => {
       const authError = new AuthenticationError();

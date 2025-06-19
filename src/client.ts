@@ -13,6 +13,15 @@ import {
   CoinData,
   WalletValidationRequest,
   WalletValidationResponse,
+  WalletBalanceRequest,
+  WalletBalanceResponse,
+  BalanceData,
+  SupportedNetwork,
+  CreateWalletRequest,
+  CreateWalletResponse,
+  SendTransactionRequest,
+  SendTransactionResponse,
+  SendTransactionData,
 } from './types';
 import {
   CryptoApiError,
@@ -234,6 +243,88 @@ export class CryptoWebApiClient {
       network: response.network,
       address: request.address,
       valid: response.data?.valid || false,
+    };
+  }
+
+  // ========================================
+  // WALLET ENDPOINT
+  // ========================================
+  /**
+   * Retrieve Wallet Balance
+   * POST /api/wallet/balance
+   */
+  async getWalletBalance(request: WalletBalanceRequest): Promise<WalletBalanceResponse> {
+    const requestBody = {
+      key: this.config.apiKey,
+      network: request.network,
+      address: request.address,
+      mode: request.mode || 'mainnet',
+      ...(request.tokens && { tokens: request.tokens }),
+    };
+
+    const response = await this.makeRequest<BalanceData[]>(
+      'POST',
+      '/api/wallet/balance',
+      requestBody
+    );
+
+    return {
+      success: response.success,
+      message: response.message,
+      network: response.network as SupportedNetwork,
+      address: request.address,
+      data: response.data || [],
+    };
+  }
+
+  /**
+   * Create a New Wallet
+   * GET /api/wallet/create
+   */
+  async createWallet(request: CreateWalletRequest): Promise<CreateWalletResponse> {
+    const params = {
+      key: this.config.apiKey,
+      network: request.network,
+    };
+
+    const response = await this.makeRequest<any>('GET', '/api/wallet/create', undefined, {
+      params,
+    });
+
+    // Transform the response to match CreateWalletResponse structure
+    return {
+      success: response.success,
+      message: response.message,
+      network: response.network as SupportedNetwork,
+      address: response.data?.address || '',
+      key: response.data?.key || '',
+      mnemonic: response.data?.mnemonic || '',
+    };
+  }
+
+  /**
+   * Send Raw Transaction
+   * POST /api/wallet/send
+   */
+  async sendTransaction(request: SendTransactionRequest): Promise<SendTransactionResponse> {
+    const requestBody = {
+      key: this.config.apiKey,
+      rawTx: request.rawTx,
+      network: request.network,
+      mode: request.mode || 'mainnet',
+    };
+
+    const response = await this.makeRequest<SendTransactionData>(
+      'POST',
+      '/api/wallet/send',
+      requestBody
+    );
+
+    return {
+      success: response.success,
+      message: response.message,
+      network: response.network as SupportedNetwork,
+      data: response.data || { txId: '' },
     };
   }
 
