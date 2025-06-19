@@ -71,6 +71,24 @@ describe('CryptoWebApiClient', () => {
     });
   });
 
+  describe('listTransactions endpoint', () => {
+    it('should have listTransactions method', () => {
+      expect(typeof client.listTransactions).toBe('function');
+    });
+  });
+
+  describe('getSupportedCoins endpoint', () => {
+    it('should have getSupportedCoins method', () => {
+      expect(typeof client.getSupportedCoins).toBe('function');
+    });
+  });
+
+  describe('validateWalletAddress endpoint', () => {
+    it('should have validateWalletAddress method', () => {
+      expect(typeof client.validateWalletAddress).toBe('function');
+    });
+  });
+
   describe('error handling', () => {
     it('should handle authentication errors', () => {
       const authError = new AuthenticationError();

@@ -63,3 +63,90 @@ export interface ApiError {
   message: string;
   statusCode?: number;
 }
+
+// List Transactions Types
+export interface ListTransactionsRequest {
+  network: SupportedNetwork;
+
+  // Address filters
+  address?: string;
+  fromAddress?: string;
+  toAddress?: string;
+
+  // Transaction type and token filters
+  txType?: string;
+  tokenSymbol?: string;
+
+  // Value filters (deprecated field names for compatibility)
+  fromValue?: number;
+  toValue?: number;
+
+  // Value filters (new field names)
+  minValueDecimal?: number;
+  maxValueDecimal?: number;
+
+  // Fee filters
+  minFeeDecimal?: number;
+  maxFeeDecimal?: number;
+
+  // Date filters (deprecated field names for compatibility)
+  fromTimestamp?: string;
+  toTimestamp?: string;
+
+  // Date filters (new field names)
+  startDate?: string;
+  endDate?: string;
+
+  // Sorting
+  sortBy?: 'timestamp' | 'valueDecimal' | 'feeDecimal';
+  sortOrder?: 'asc' | 'desc';
+
+  // Pagination
+  limit?: number; // max 1000
+  offset?: number;
+}
+
+// List Transactions Response
+export interface ListTransactionsResponse {
+  success: boolean;
+  message: string;
+  network: SupportedNetwork;
+  data: TransactionData[];
+}
+
+// Supported Coins Types
+export interface SupportedCoinsRequest {
+  network: SupportedNetwork;
+}
+
+export interface CoinData {
+  name: string;
+  shortName: string;
+  tag: string;
+  symbol: string;
+  type: string;
+  decimals: number;
+  contractAddress: string;
+  provider: string;
+}
+
+export interface SupportedCoinsResponse {
+  success: boolean;
+  message: string;
+  network: SupportedNetwork;
+  data: CoinData[];
+}
+
+// Wallet Validation Types
+export interface WalletValidationRequest {
+  network: SupportedNetwork;
+  address: string;
+}
+
+export interface WalletValidationResponse {
+  success: boolean;
+  message: string;
+  network: SupportedNetwork;
+  address: string;
+  valid: boolean;
+}
