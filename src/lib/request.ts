@@ -11,7 +11,6 @@ import {
 export class ApiRequest {
   private axios: AxiosInstance;
   private config: CryptoApiConfig;
-
   constructor(config: CryptoApiConfig) {
     this.config = {
       timeout: 10000,
@@ -21,7 +20,7 @@ export class ApiRequest {
     };
 
     this.axios = axios.create({
-      baseURL: config.baseUrl || 'https://api.cryptowebapi.com',
+      baseURL: 'https://api.cryptowebapi.com',
       timeout: this.config.timeout,
       headers: {
         'Content-Type': 'application/json',
@@ -30,18 +29,16 @@ export class ApiRequest {
 
     this.setupInterceptors();
   }
-
   private setupInterceptors(): void {
     // Request interceptor
     this.axios.interceptors.request.use(
       (config) => {
-        // Add timestamp to all requests
-        config.params = { ...config.params, _t: Date.now() };
-
-        // Add API key to headers if provided
-        if (this.config.apiKey) {
-          config.headers['Authorization'] = `Bearer ${this.config.apiKey}`;
-        }
+        // Add timestamp and API key to all requests as query parameters
+        config.params = { 
+          ...config.params, 
+          _t: Date.now(),
+          ...(this.config.apiKey && { key: this.config.apiKey })
+        };
 
         return config;
       },

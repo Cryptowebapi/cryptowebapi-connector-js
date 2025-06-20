@@ -47,9 +47,7 @@ export class CryptoWebApiClient {
       'GET',
       '/api/blockchain/transaction',
       undefined,
-      {
-        params,
-      }
+      { params }
     );
   }
   /**
