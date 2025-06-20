@@ -121,4 +121,23 @@ export class ApiRequest {
   getApiKey(): string {
     return this.config.apiKey;
   }
+
+  /**
+   * Get current configuration
+   */
+  getConfig(): CryptoApiConfig {
+    return { ...this.config };
+  }
+
+  /**
+   * Update configuration
+   */
+  updateConfig(newConfig: Partial<CryptoApiConfig>): void {
+    this.config = { ...this.config, ...newConfig };
+    
+    // Update axios instance with new timeout if provided
+    if (newConfig.timeout !== undefined) {
+      this.axios.defaults.timeout = newConfig.timeout;
+    }
+  }
 }

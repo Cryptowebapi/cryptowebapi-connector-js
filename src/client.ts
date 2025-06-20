@@ -30,6 +30,21 @@ export class CryptoWebApiClient {
   constructor(config: CryptoApiConfig) {
     this.apiRequest = new ApiRequest(config);
   }
+
+  /**
+   * Get current configuration
+   */
+  getConfig(): CryptoApiConfig {
+    return this.apiRequest.getConfig();
+  }
+
+  /**
+   * Update configuration
+   */
+  updateConfig(newConfig: Partial<CryptoApiConfig>): void {
+    this.apiRequest.updateConfig(newConfig);
+  }
+
   // ========================================
   // BLOCKCHAIN ENDPOINT
   // ========================================
