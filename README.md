@@ -506,7 +506,7 @@ This project is licensed under the MIT License.
 ## 🆘 Support
 
 - **Documentation**: Check this README for comprehensive guides
-- **API Documentation**: Visit [api.cryptowebapi.com](https://api.cryptowebapi.com)
+- **API Documentation**: Visit [api.cryptowebapi.com/api/doc](https://api.cryptowebapi.com/api/doc)
 - **Issues**: Report bugs on GitHub Issues
 
 ---

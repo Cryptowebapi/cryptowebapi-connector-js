@@ -48,7 +48,7 @@
   "bugs": {
     "url": "https://github.com/yourusername/cryptowebapi-connector-js/issues"
   },
-  "homepage": "https://github.com/yourusername/cryptowebapi-connector-js#readme",
+  "homepage": "https://cryptowebapi.com/",
   "dependencies": {
     "axios": "^1.6.0"
   },
