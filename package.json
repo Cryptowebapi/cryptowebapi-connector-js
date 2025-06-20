@@ -28,11 +28,11 @@
     "release": "standard-version"
   },
   "keywords": [
+    "cryptowebapi",
     "crypto",
     "cryptocurrency",
     "api",
     "wrapper",
-    "client",
     "bitcoin",
     "ethereum",
     "blockchain",

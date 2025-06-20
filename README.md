@@ -1,4 +1,4 @@
-# CryptoWebAPI Connector JS
+# CryptoWebAPI Connector
 
 A robust TypeScript/JavaScript wrapper for **CryptoWebAPI** with built-in error handling, automatic retries, and full type safety. This connector provides easy access to blockchain transaction data, wallet operations, and comprehensive crypto services.
 
@@ -11,7 +11,7 @@ A robust TypeScript/JavaScript wrapper for **CryptoWebAPI** with built-in error 
 - 🔧 **Configurable** - Flexible configuration options
 - 📦 **Lightweight** - Minimal dependencies
 - 🧪 **Well Tested** - Comprehensive test coverage
-- 🔗 **Real API Integration** - Built for https://api.cryptowebapi.com
+- 🔗 **Real API Integration** - Built for https://api.cryptowebapi.com/api/doc
 - 💰 **Multi-Network Support** - Ethereum, BSC, Bitcoin, Tron support
 - 🏦 **Complete Wallet Operations** - Create, validate, balance, and transaction sending
 
