@@ -22,14 +22,23 @@ export interface GetTransactionResponse {
 // Transaction Data
 export interface TransactionData {
   hash: string;
-  blockNumber: string;
-  timestamp: string; // ISO date format like "2023-01-15T14:30:45Z"
-  fromAddress: string;
-  toAddress: string;
-  valueDecimal: string;
-  feeDecimal: string;
+  type: string;
   status: string; // "confirmed", "pending", "failed"
-  tokenSymbol: string;
+  blockHash: string;
+  blockNumber: number;
+  confirmations: number;
+  timestamp: string; // ISO date format like "2025-06-20T14:19:59.000Z"
+  from: string;
+  to: string;
+  valueWei: string;
+  valueEth: string;
+  gasLimit: string;
+  gasPriceWei: string;
+  gasPriceGwei: string;
+  gasUsed: string;
+  feeEstimateEth: string;
+  isContractCall: boolean;
+  data: string;
 }
 
 // Configuration Types
@@ -106,12 +115,33 @@ export interface ListTransactionsRequest {
   offset?: number;
 }
 
+// List Transactions Data (different structure from TransactionData)
+export interface ListTransactionData {
+  network: SupportedNetwork;
+  hash: string;
+  fromAddress: string;
+  toAddress: string;
+  blockHeight: string;
+  blockTime: string;
+  timestamp: string; // ISO date format like "2025-06-22T07:27:11+00:00"
+  nonce: string;
+  txType: string;
+  valueRaw: string;
+  valueDecimal: number;
+  feeRaw: string;
+  feeDecimal: number;
+  gasUsed: string;
+  gasPriceWei: string;
+  tokenSymbol: string | null;
+  tokenContract: string;
+  programId: string | null;
+  slot: string | null;
+}
+
 // List Transactions Response
 export interface ListTransactionsResponse {
   success: boolean;
-  message: string;
-  network: SupportedNetwork;
-  data: TransactionData[];
+  data: ListTransactionData[];
 }
 
 // Supported Coins Types
@@ -120,22 +150,20 @@ export interface SupportedCoinsRequest {
 }
 
 export interface CoinData {
-  name: string;
+  coin: string;
   shortName: string;
-  tag: string;
+  tag: string | null;
   symbol: string;
   type: string;
   decimals: number;
-  contractAddress: string;
-  provider: string;
+  contractAddress: string | null;
+  testnetContractAddress: string | null;
+  isToken: boolean;
+  usdRate: number | null;
+  network: SupportedNetwork;
 }
 
-export interface SupportedCoinsResponse {
-  success: boolean;
-  message: string;
-  network: SupportedNetwork;
-  data: CoinData[];
-}
+export interface SupportedCoinsResponse extends Array<CoinData> {}
 
 // Wallet Validation Types
 export interface WalletValidationRequest {
