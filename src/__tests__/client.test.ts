@@ -1,6 +1,6 @@
 import { CryptoWebApiClient } from '../client';
 import { CryptoApiConfig } from '../types';
-import { AuthenticationError, NetworkError } from '../errors';
+import { AxiosError, isAxiosError, getErrorMessage, getErrorStatus } from '../errors';
 
 // Mock axios
 jest.mock('axios', () => ({
@@ -106,19 +106,29 @@ describe('CryptoWebApiClient', () => {
       expect(typeof client.sendTransaction).toBe('function');
     });
   });
-
   describe('error handling', () => {
-    it('should handle authentication errors', () => {
-      const authError = new AuthenticationError();
-      expect(authError).toBeInstanceOf(AuthenticationError);
-      expect(authError.code).toBe('AUTH_ERROR');
-      expect(authError.statusCode).toBe(401);
+    it('should handle axios errors with helper functions', () => {
+      // Create a mock axios error
+      const mockAxiosError = {
+        isAxiosError: true,
+        message: 'Request failed',
+        response: {
+          status: 401,
+          data: { message: 'Authentication failed' }
+        }
+      };
+
+      expect(isAxiosError(mockAxiosError)).toBe(true);
+      expect(getErrorMessage(mockAxiosError)).toBe('Authentication failed');
+      expect(getErrorStatus(mockAxiosError)).toBe(401);
     });
 
-    it('should handle network errors', () => {
-      const networkError = new NetworkError('Connection failed');
-      expect(networkError).toBeInstanceOf(NetworkError);
-      expect(networkError.code).toBe('NETWORK_ERROR');
+    it('should handle non-axios errors', () => {
+      const regularError = new Error('Regular error');
+      
+      expect(isAxiosError(regularError)).toBe(false);
+      expect(getErrorMessage(regularError)).toBe('Regular error');
+      expect(getErrorStatus(regularError)).toBeUndefined();
     });
   });
 });

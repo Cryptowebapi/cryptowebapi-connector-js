@@ -146,23 +146,9 @@ export class CryptoWebApiClient {
       address: request.address,
     };
 
-    const response = await this.apiRequest.makeRequest<any>(
-      'GET',
-      '/api/info/wallet-validation',
-      undefined,
-      {
-        params,
-      }
-    );
-
-    // Transform the response to match WalletValidationResponse structure
-    return {
-      success: response.success,
-      message: response.message,
-      network: response.network,
-      address: request.address,
-      valid: response.data?.valid || false,
-    };
+    return this.apiRequest.makeRequest<any>('GET', '/api/info/wallet-validation', undefined, {
+      params,
+    });
   }
   // ========================================
   // WALLET ENDPOINT
@@ -180,19 +166,7 @@ export class CryptoWebApiClient {
       ...(request.tokens && { tokens: request.tokens }),
     };
 
-    const response = await this.apiRequest.makeRequest<any>(
-      'POST',
-      '/api/wallet/balance',
-      requestBody
-    );
-
-    return {
-      success: response.success,
-      message: response.message,
-      network: response.network as SupportedNetwork,
-      address: request.address,
-      data: response.data || [],
-    };
+    return this.apiRequest.makeRequest<any>('POST', '/api/wallet/balance', requestBody);
   }
 
   /**
@@ -204,24 +178,9 @@ export class CryptoWebApiClient {
       network: request.network,
     };
 
-    const response = await this.apiRequest.makeRequest<any>(
-      'GET',
-      '/api/wallet/create',
-      undefined,
-      {
-        params,
-      }
-    );
-
-    // Transform the response to match CreateWalletResponse structure
-    return {
-      success: response.success,
-      message: response.message,
-      network: response.network as SupportedNetwork,
-      address: response.data?.address || '',
-      key: response.data?.key || '',
-      mnemonic: response.data?.mnemonic || '',
-    };
+    return this.apiRequest.makeRequest<any>('GET', '/api/wallet/create', undefined, {
+      params,
+    });
   }
 
   /**
@@ -234,18 +193,8 @@ export class CryptoWebApiClient {
       network: request.network,
       mode: request.mode || 'mainnet',
     };
-    const response = await this.apiRequest.makeRequest<any>(
-      'POST',
-      '/api/wallet/send',
-      requestBody
-    );
 
-    return {
-      success: response.success,
-      message: response.message,
-      network: response.network as SupportedNetwork,
-      data: response.data || { txId: '' },
-    };
+    return this.apiRequest.makeRequest<any>('POST', '/api/wallet/send', requestBody);
   }
 
   // ========================================

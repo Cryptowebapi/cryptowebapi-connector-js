@@ -1,82 +1,116 @@
 import {
-  CryptoApiError,
-  NetworkError,
-  AuthenticationError,
-  RateLimitError,
-  ValidationError,
-  NotFoundError,
+  AxiosError,
+  isAxiosError,
+  getErrorMessage,
+  getErrorStatus,
 } from '../errors';
 
-describe('Error Classes', () => {
-  describe('CryptoApiError', () => {
-    it('should create basic error', () => {
-      const error = new CryptoApiError('Test error', 'TEST_ERROR');
+describe('Error Utilities', () => {
+  describe('isAxiosError', () => {
+    it('should return true for axios errors', () => {
+      const axiosError = {
+        isAxiosError: true,
+        message: 'Request failed',
+        response: {
+          status: 500,
+          data: { message: 'Server error' }
+        }
+      };
 
-      expect(error.message).toBe('Test error');
-      expect(error.code).toBe('TEST_ERROR');
-      expect(error.name).toBe('CryptoApiError');
+      expect(isAxiosError(axiosError)).toBe(true);
     });
 
-    it('should create error with status code', () => {
-      const error = new CryptoApiError('Test error', 'TEST_ERROR', 500);
-
-      expect(error.statusCode).toBe(500);
-    });
-  });
-
-  describe('NetworkError', () => {
-    it('should create network error', () => {
-      const error = new NetworkError('Connection failed');
-
-      expect(error.message).toBe('Connection failed');
-      expect(error.code).toBe('NETWORK_ERROR');
-      expect(error.name).toBe('NetworkError');
-    });
-  });
-
-  describe('AuthenticationError', () => {
-    it('should create auth error with default message', () => {
-      const error = new AuthenticationError();
-
-      expect(error.message).toBe('Authentication failed');
-      expect(error.code).toBe('AUTH_ERROR');
-      expect(error.statusCode).toBe(401);
+    it('should return false for regular errors', () => {
+      const regularError = new Error('Regular error');
+      expect(isAxiosError(regularError)).toBe(false);
     });
 
-    it('should create auth error with custom message', () => {
-      const error = new AuthenticationError('Invalid API key');
-
-      expect(error.message).toBe('Invalid API key');
+    it('should return false for non-error objects', () => {
+      expect(isAxiosError(null)).toBe(false);
+      expect(isAxiosError(undefined)).toBe(false);
+      expect(isAxiosError({})).toBe(false);
+      expect(isAxiosError('string')).toBe(false);
     });
   });
 
-  describe('RateLimitError', () => {
-    it('should create rate limit error', () => {
-      const error = new RateLimitError();
+  describe('getErrorMessage', () => {
+    it('should extract message from axios error response data', () => {
+      const axiosError = {
+        isAxiosError: true,
+        message: 'Request failed',
+        response: {
+          status: 400,
+          data: { message: 'Validation failed' }
+        }
+      };
 
-      expect(error.message).toBe('Rate limit exceeded');
-      expect(error.code).toBe('RATE_LIMIT_ERROR');
-      expect(error.statusCode).toBe(429);
+      expect(getErrorMessage(axiosError)).toBe('Validation failed');
+    });
+
+    it('should fall back to axios error message', () => {
+      const axiosError = {
+        isAxiosError: true,
+        message: 'Network Error',
+        response: {
+          status: 500,
+          data: {}
+        }
+      };
+
+      expect(getErrorMessage(axiosError)).toBe('Network Error');
+    });
+
+    it('should handle axios error without response', () => {
+      const axiosError = {
+        isAxiosError: true,
+        message: 'Connection timeout'
+      };
+
+      expect(getErrorMessage(axiosError)).toBe('Connection timeout');
+    });
+
+    it('should handle regular errors', () => {
+      const regularError = new Error('Something went wrong');
+      expect(getErrorMessage(regularError)).toBe('Something went wrong');
+    });
+
+    it('should handle unknown errors', () => {
+      expect(getErrorMessage(null)).toBe('Unknown error occurred');
+      expect(getErrorMessage({})).toBe('Unknown error occurred');
     });
   });
 
-  describe('ValidationError', () => {
-    it('should create validation error', () => {
-      const error = new ValidationError('Invalid input');
+  describe('getErrorStatus', () => {
+    it('should extract status from axios error', () => {
+      const axiosError = {
+        isAxiosError: true,
+        message: 'Request failed',
+        response: {
+          status: 404,
+          data: { message: 'Not found' }
+        }
+      };
 
-      expect(error.message).toBe('Invalid input');
-      expect(error.code).toBe('VALIDATION_ERROR');
-      expect(error.statusCode).toBe(400);
+      expect(getErrorStatus(axiosError)).toBe(404);
     });
-  });
 
-  describe('NotFoundError', () => {
-    it('should create not found error', () => {
-      const error = new NotFoundError();
+    it('should return undefined for axios error without response', () => {
+      const axiosError = {
+        isAxiosError: true,
+        message: 'Network Error'
+      };
 
-      expect(error.message).toBe('Resource not found');
-      expect(error.code).toBe('NOT_FOUND_ERROR');
-      expect(error.statusCode).toBe(404);
+      expect(getErrorStatus(axiosError)).toBeUndefined();
+    });
+
+    it('should return undefined for regular errors', () => {
+      const regularError = new Error('Something went wrong');
+      expect(getErrorStatus(regularError)).toBeUndefined();
+    });
+
+    it('should return undefined for unknown errors', () => {
+      expect(getErrorStatus(null)).toBeUndefined();
+      expect(getErrorStatus({})).toBeUndefined();
     });
   });
 });

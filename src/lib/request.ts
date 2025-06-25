@@ -1,12 +1,6 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosError } from 'axios';
 import { CryptoApiConfig } from '../types';
-import {
-  CryptoApiError,
-  NetworkError,
-  AuthenticationError,
-  RateLimitError,
-  NotFoundError,
-} from '../errors';
+import { isAxiosError } from '../errors';
 
 export class ApiRequest {
   private axios: AxiosInstance;
@@ -43,39 +37,16 @@ export class ApiRequest {
         return config;
       },
       (error) => Promise.reject(error)
-    );
-
-    // Response interceptor
+    );    // Response interceptor
     this.axios.interceptors.response.use(
       (response) => response,
       (error) => {
-        if (error.response) {
-          const { status, data } = error.response;
-
-          switch (status) {
-            case 401:
-              throw new AuthenticationError(data?.message || 'Authentication failed');
-            case 404:
-              throw new NotFoundError(data?.message || 'Resource not found');
-            case 429:
-              throw new RateLimitError(data?.message || 'Rate limit exceeded');
-            default:
-              throw new CryptoApiError(
-                data?.message || 'API request failed',
-                'API_ERROR',
-                status,
-                error
-              );
-          }
-        } else if (error.request) {
-          throw new NetworkError('Network error occurred', error);
-        } else {
-          throw new CryptoApiError('Unknown error occurred', 'UNKNOWN_ERROR', undefined, error);
-        }
+        // Return the original axios error without modification
+        // This preserves the axios error format with response, request, config properties
+        return Promise.reject(error);
       }
     );
-  }
-  async makeRequest<T>(
+  }  async makeRequest<T>(
     method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     endpoint: string,
     data?: any,
@@ -94,15 +65,12 @@ export class ApiRequest {
 
         return response.data;
       } catch (error) {
-        lastError = error;
-
-        // Don't retry on authentication or validation errors
-        if (
-          error instanceof AuthenticationError ||
-          error instanceof NotFoundError ||
-          (error instanceof CryptoApiError && error.statusCode === 400)
-        ) {
-          throw error;
+        lastError = error;        // Don't retry on authentication, validation, or not found errors
+        if (isAxiosError(error) && error.response) {
+          const status = error.response.status;
+          if (status === 401 || status === 400 || status === 404) {
+            throw error;
+          }
         }
 
         if (attempt < this.config.retryAttempts!) {

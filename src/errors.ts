@@ -1,52 +1,24 @@
-export class CryptoApiError extends Error {
-  public readonly code: string;
-  public readonly statusCode?: number;
-  public readonly originalError?: any;
+// Re-export Axios error types for users who want to handle specific error types
+export { AxiosError, AxiosResponse, AxiosRequestConfig } from 'axios';
+import { AxiosError } from 'axios';
 
-  constructor(message: string, code: string, statusCode?: number, originalError?: any) {
-    super(message);
-    this.name = 'CryptoApiError';
-    this.code = code;
-    this.statusCode = statusCode;
-    this.originalError = originalError;
-    // Maintains proper stack trace for where our error was thrown (only available on V8)
-    if ((Error as any).captureStackTrace) {
-      (Error as any).captureStackTrace(this, CryptoApiError);
-    }
-  }
+// Type guard to check if error is an Axios error
+export function isAxiosError(error: any): error is AxiosError {
+  return error != null && error.isAxiosError === true;
 }
 
-export class NetworkError extends CryptoApiError {
-  constructor(message: string, originalError?: any) {
-    super(message, 'NETWORK_ERROR', undefined, originalError);
-    this.name = 'NetworkError';
+// Helper function to get error message from Axios error
+export function getErrorMessage(error: any): string {
+  if (isAxiosError(error)) {
+    return (error.response?.data as any)?.message || error.message || 'Request failed';
   }
+  return (error as any)?.message || 'Unknown error occurred';
 }
 
-export class AuthenticationError extends CryptoApiError {
-  constructor(message: string = 'Authentication failed') {
-    super(message, 'AUTH_ERROR', 401);
-    this.name = 'AuthenticationError';
+// Helper function to get status code from Axios error
+export function getErrorStatus(error: any): number | undefined {
+  if (isAxiosError(error)) {
+    return error.response?.status;
   }
-}
-
-export class RateLimitError extends CryptoApiError {
-  constructor(message: string = 'Rate limit exceeded') {
-    super(message, 'RATE_LIMIT_ERROR', 429);
-    this.name = 'RateLimitError';
-  }
-}
-
-export class ValidationError extends CryptoApiError {
-  constructor(message: string) {
-    super(message, 'VALIDATION_ERROR', 400);
-    this.name = 'ValidationError';
-  }
-}
-
-export class NotFoundError extends CryptoApiError {
-  constructor(message: string = 'Resource not found') {
-    super(message, 'NOT_FOUND_ERROR', 404);
-    this.name = 'NotFoundError';
-  }
+  return undefined;
 }

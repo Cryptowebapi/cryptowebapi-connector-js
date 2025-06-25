@@ -1,4 +1,4 @@
-import { CryptoWebApiClient } from '../src';
+import { CryptoWebApiClient, isAxiosError, getErrorMessage, getErrorStatus } from '../src';
 
 async function main() {
   // Initialize the client
@@ -16,9 +16,7 @@ async function main() {
       console.log('Transaction found!', response.data);
     } else {
       console.log('Error:', response.message);
-    }
-
-    // List transactions with filters
+    }    // List transactions with filters
     const transactions = await client.listTransactions({
       network: 'ethereum',
       limit: 10,
@@ -29,21 +27,20 @@ async function main() {
     if (transactions.success) {
       console.log('Transactions found!', transactions.data.length, 'results');
     } else {
-      console.log('Error:', transactions.message);
-    }
-
-    // Get supported coins for a network
+      console.log('Error: Unable to fetch transactions');
+    }    // Get supported coins for a network
     const supportedCoins = await client.getSupportedCoins({
       network: 'ethereum',
     });
-    if (supportedCoins.success) {
-      console.log('Supported coins:', supportedCoins.data.length, 'coins found');
+    
+    if (supportedCoins && supportedCoins.length > 0) {
+      console.log('Supported coins:', supportedCoins.length, 'coins found');
       // Show first few coins as example
-      supportedCoins.data.slice(0, 3).forEach((coin) => {
-        console.log(`- ${coin.symbol} (${coin.name}) - Type: ${coin.type}`);
+      supportedCoins.slice(0, 3).forEach((coin) => {
+        console.log(`- ${coin.symbol} (${coin.coin}) - Type: ${coin.type}`);
       });
     } else {
-      console.log('Error:', supportedCoins.message);
+      console.log('No supported coins found');
     }
 
     // Validate a wallet address
@@ -113,9 +110,16 @@ async function main() {
       console.log(`Transaction ID: ${sendResult.data.txId}`);
     } else {
       console.log('Send error:', sendResult.message);
+    }  } catch (error) {
+    // Handle Axios errors with the new utility functions
+    if (isAxiosError(error)) {
+      console.error('API Request failed:');
+      console.error('- Status:', getErrorStatus(error));
+      console.error('- Message:', getErrorMessage(error));
+      console.error('- Response data:', error.response?.data);
+    } else {
+      console.error('Unexpected error:', getErrorMessage(error));
     }
-  } catch (error) {
-    console.error('Request failed:', error.message);
   }
 }
 
