@@ -161,6 +161,10 @@ const supportedCoins = await client.getSupportedCoins({
 });
 ```
 
+**Parameters:**
+
+- `network?` (SupportedNetwork): Blockchain network
+
 **Response:**
 
 ```typescript
