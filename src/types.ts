@@ -265,3 +265,66 @@ export interface AddressFromMnemonicResponse {
   network: SupportedNetwork;
   data: AddressFromMnemonicData;
 }
+
+// Fee Data Types
+export interface FeeDataRequest {
+  network: SupportedNetwork;
+  mode?: 'mainnet' | 'testnet';
+}
+
+export interface FeeDataResponse {
+  success: boolean;
+  message: string;
+  network: SupportedNetwork;
+  data: {
+    gasPrice: string;
+    maxFeePerGas?: string;
+    maxPriorityFeePerGas?: string;
+  };
+}
+
+// Account Nonce Types
+export interface AccountNonceRequest {
+  network: SupportedNetwork;
+  address: string;
+  mode?: 'mainnet' | 'testnet';
+}
+
+export interface AccountNonceResponse {
+  success: boolean;
+  message: string;
+  network: SupportedNetwork;
+  data: {
+    nonce: number;
+  };
+}
+
+// Transaction Builder Types
+export interface TransactionBuilderRequest {
+  network: SupportedNetwork;
+  privateKey: string;
+  receiver: string;
+  value: string | number;
+  mode?: 'mainnet' | 'testnet';
+  contractAddress?: string; // Required for token transactions
+  contractDecimal?: number; // Required for token transactions
+}
+
+export interface TransactionBuilderResponse {
+  success: boolean;
+  message: string;
+  network: SupportedNetwork;
+  data: {
+    status: 'build';
+    type: 'erc20' | 'bep20' | 'native'; // BEP20 for BNB Smart Chain tokens
+    from: string;
+    to: string;
+    value: string;
+    rawTx: string;
+    gasPrice: string;
+    gasLimit: string;
+    estimatedFeeEth: string;
+    nonce: string;
+    chainId: string;
+  };
+}
