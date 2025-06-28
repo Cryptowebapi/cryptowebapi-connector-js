@@ -122,9 +122,12 @@ export class CryptoWebApiClient {
    * GET /api/info/supported-coins
    */
   async getSupportedCoins(request: SupportedCoinsRequest): Promise<SupportedCoinsResponse> {
-    const params = {
-      network: request.network,
-    };
+    const params: any = {};
+
+    // Only add network parameter if provided
+    if (request.network) {
+      params.network = request.network;
+    }
 
     return this.apiRequest.makeRequest<SupportedCoinsResponse>(
       'GET',

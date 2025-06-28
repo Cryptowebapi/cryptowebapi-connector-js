@@ -146,7 +146,7 @@ export interface ListTransactionsResponse {
 
 // Supported Coins Types
 export interface SupportedCoinsRequest {
-  network: SupportedNetwork;
+  network?: SupportedNetwork;
 }
 
 export interface CoinData {
