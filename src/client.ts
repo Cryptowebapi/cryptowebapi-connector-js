@@ -21,6 +21,8 @@ import {
   SendTransactionRequest,
   SendTransactionResponse,
   SendTransactionData,
+  AddressFromMnemonicRequest,
+  AddressFromMnemonicResponse,
 } from './types';
 import { ApiRequest } from './lib/request';
 
@@ -198,6 +200,26 @@ export class CryptoWebApiClient {
     };
 
     return this.apiRequest.makeRequest<any>('POST', '/api/wallet/send', requestBody);
+  }
+
+  /**
+   * Generate Address from Mnemonic
+   * POST /api/wallet/address-from-mnemonic
+   */
+  async generateAddressFromMnemonic(
+    request: AddressFromMnemonicRequest
+  ): Promise<AddressFromMnemonicResponse> {
+    const requestBody = {
+      network: request.network,
+      mnemonic: request.mnemonic,
+      mode: request.mode || 'mainnet',
+    };
+
+    return this.apiRequest.makeRequest<any>(
+      'POST',
+      '/api/wallet/address-from-mnemonic',
+      requestBody
+    );
   }
 
   // ========================================

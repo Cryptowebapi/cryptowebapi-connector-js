@@ -114,8 +114,8 @@ describe('CryptoWebApiClient', () => {
         message: 'Request failed',
         response: {
           status: 401,
-          data: { message: 'Authentication failed' }
-        }
+          data: { message: 'Authentication failed' },
+        },
       };
 
       expect(isAxiosError(mockAxiosError)).toBe(true);
@@ -125,10 +125,16 @@ describe('CryptoWebApiClient', () => {
 
     it('should handle non-axios errors', () => {
       const regularError = new Error('Regular error');
-      
+
       expect(isAxiosError(regularError)).toBe(false);
       expect(getErrorMessage(regularError)).toBe('Regular error');
       expect(getErrorStatus(regularError)).toBeUndefined();
+    });
+  });
+
+  describe('generateAddressFromMnemonic endpoint', () => {
+    it('should have generateAddressFromMnemonic method', () => {
+      expect(typeof client.generateAddressFromMnemonic).toBe('function');
     });
   });
 });

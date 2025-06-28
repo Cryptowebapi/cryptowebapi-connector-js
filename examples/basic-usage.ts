@@ -16,7 +16,7 @@ async function main() {
       console.log('Transaction found!', response.data);
     } else {
       console.log('Error:', response.message);
-    }    // List transactions with filters
+    } // List transactions with filters
     const transactions = await client.listTransactions({
       network: 'ethereum',
       limit: 10,
@@ -28,16 +28,18 @@ async function main() {
       console.log('Transactions found!', transactions.data.length, 'results');
     } else {
       console.log('Error: Unable to fetch transactions');
-    }    // Get supported coins for a network
+    } // Get supported coins for a network
     const supportedCoins = await client.getSupportedCoins({
       network: 'ethereum',
     });
-    
+
     if (supportedCoins && supportedCoins.length > 0) {
       console.log('Supported coins:', supportedCoins.length, 'coins found');
       // Show first few coins as example
       supportedCoins.slice(0, 3).forEach((coin) => {
-        console.log(`- ${coin.symbol} (${coin.coin}) - Type: ${coin.type}`);
+        console.log(`- ${coin.symbol} (${coin.name}) - Type: ${coin.type}`);
+        console.log(`  Short Name: ${coin.shortName}, Provider: ${coin.provider}`);
+        console.log(`  USD Rate: $${coin.usdRate}, Contract: ${coin.contractAddress}`);
       });
     } else {
       console.log('No supported coins found');
@@ -90,11 +92,28 @@ async function main() {
 
     if (newWallet.success) {
       console.log('New wallet created!');
-      console.log(`Address: ${newWallet.address}`);
-      console.log(`Private Key: ${newWallet.key.substring(0, 10)}...`); // Only show first 10 chars for security
-      console.log(`Mnemonic: ${newWallet.mnemonic.split(' ').slice(0, 3).join(' ')}...`); // Only show first 3 words
+      console.log('Address:', newWallet.address);
+      console.log('Private Key:', newWallet.key);
+      console.log('Mnemonic:', newWallet.mnemonic);
     } else {
-      console.log('Wallet creation error:', newWallet.message);
+      console.log('Error creating wallet:', newWallet.message);
+    }
+
+    // Generate address from mnemonic phrase
+    const addressFromMnemonic = await client.generateAddressFromMnemonic({
+      network: 'ethereum',
+      mnemonic: 'word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12',
+      mode: 'mainnet',
+    });
+
+    if (addressFromMnemonic.success) {
+      console.log('Address generated from mnemonic!');
+      console.log('Network:', addressFromMnemonic.data.network);
+      console.log('Address:', addressFromMnemonic.data.address);
+      console.log('Public Key:', addressFromMnemonic.data.publicKey);
+      console.log('Derivation Path:', addressFromMnemonic.data.path);
+    } else {
+      console.log('Error generating address from mnemonic:', addressFromMnemonic.message);
     }
 
     // Send a raw transaction (example with a sample raw transaction)
@@ -110,7 +129,8 @@ async function main() {
       console.log(`Transaction ID: ${sendResult.data.txId}`);
     } else {
       console.log('Send error:', sendResult.message);
-    }  } catch (error) {
+    }
+  } catch (error) {
     // Handle Axios errors with the new utility functions
     if (isAxiosError(error)) {
       console.error('API Request failed:');

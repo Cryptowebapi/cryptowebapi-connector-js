@@ -169,14 +169,17 @@ const supportedCoins = await client.getSupportedCoins({
 
 ```typescript
 interface CoinData {
-  name: string;
-  shortName: string;
-  tag: string;
-  symbol: string;
-  type: string;
-  decimals: number;
-  contractAddress: string;
-  provider: string;
+  name: string; // Full name of the coin/token (e.g., "Tether USD (BSC)")
+  shortName: string; // Short display name (e.g., "USDTBEP20")
+  tag: string; // Tag/category identifier (e.g., "usdt_bep20")
+  symbol: string; // Trading symbol (e.g., "USDT")
+  type: string; // Type (e.g., "TOKEN", "COIN")
+  decimals: number; // Decimal places (e.g., 6)
+  contractAddress: string; // Smart contract address
+  provider: string; // Data provider (e.g., "binance")
+  usdRate: number; // Current USD exchange rate (e.g., 1)
+  usdRateUpdatedAt: string; // Last rate update timestamp (ISO format)
+  logo: string; // Base64 encoded logo image
 }
 ```
 
@@ -272,6 +275,43 @@ interface CreateWalletResponse {
 ```
 
 ⚠️ **Security Warning**: Store private keys and mnemonics securely!
+
+#### `generateAddressFromMnemonic(request: AddressFromMnemonicRequest)`
+
+Generate a wallet address from a mnemonic phrase.
+
+```typescript
+const addressFromMnemonic = await client.generateAddressFromMnemonic({
+  network: 'ethereum',
+  mnemonic: 'word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12',
+  mode: 'mainnet',
+});
+```
+
+**Parameters:**
+
+- `network` (SupportedNetwork): Blockchain network
+- `mnemonic` (string): BIP39 mnemonic phrase (12-24 words)
+- `mode?` ('mainnet' | 'testnet'): Network mode (default: 'mainnet')
+
+**Response:**
+
+```typescript
+interface AddressFromMnemonicResponse {
+  success: boolean;
+  message: string;
+  network: SupportedNetwork;
+  data: {
+    network: SupportedNetwork;
+    address: string; // Generated wallet address
+    publicKey: string; // Public key
+    privateKey: string; // Private key
+    path: string; // BIP44 derivation path
+  };
+}
+```
+
+⚠️ **Security Warning**: Never expose private keys or use real mnemonics in examples!
 
 #### `sendTransaction(request: SendTransactionRequest)`
 
@@ -380,7 +420,18 @@ async function completeExample() {
   try {
     // 1. Get supported coins
     const coins = await client.getSupportedCoins({ network: 'ethereum' });
-    console.log(`Found ${coins.data.length} supported coins`);
+    console.log(`Found ${coins.length} supported coins`);
+
+    // Display some coin information
+    coins.slice(0, 3).forEach((coin) => {
+      console.log(`${coin.name} (${coin.symbol})`);
+      console.log(`  Short Name: ${coin.shortName}`);
+      console.log(`  Type: ${coin.type}, Decimals: ${coin.decimals}`);
+      console.log(`  USD Rate: $${coin.usdRate}`);
+      console.log(`  Provider: ${coin.provider}`);
+      console.log(`  Contract: ${coin.contractAddress}`);
+      console.log(`  Last Updated: ${coin.usdRateUpdatedAt}`);
+    });
 
     // 2. Validate an address
     const validation = await client.validateWalletAddress({
@@ -409,6 +460,16 @@ async function completeExample() {
     // 5. Create a new wallet (testnet recommended)
     const newWallet = await client.createWallet({ network: 'ethereum' });
     console.log(`New wallet created: ${newWallet.address}`);
+
+    // 6. Generate address from mnemonic
+    const addressFromMnemonic = await client.generateAddressFromMnemonic({
+      network: 'ethereum',
+      mnemonic:
+        'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
+      mode: 'testnet', // Use testnet for examples
+    });
+    console.log(`Address generated: ${addressFromMnemonic.data.address}`);
+    console.log(`Derivation path: ${addressFromMnemonic.data.path}`);
   } catch (error) {
     console.error('Error:', error.message);
   }
@@ -442,15 +503,16 @@ interface ApiResponse<T> {
 
 ## 📋 API Endpoints Summary
 
-| Category       | Method                    | Endpoint                       | HTTP | Description                    |
-| -------------- | ------------------------- | ------------------------------ | ---- | ------------------------------ |
-| **Blockchain** | `getTransaction()`        | `/api/blockchain/transaction`  | GET  | Get transaction details        |
-| **Blockchain** | `listTransactions()`      | `/api/blockchain/transactions` | GET  | List 7-day transaction history |
-| **Info**       | `getSupportedCoins()`     | `/api/info/supported-coins`    | GET  | Get supported coins metadata   |
-| **Info**       | `validateWalletAddress()` | `/api/info/wallet-validation`  | GET  | Validate wallet address        |
-| **Wallet**     | `getWalletBalance()`      | `/api/wallet/balance`          | POST | Get wallet balance             |
-| **Wallet**     | `createWallet()`          | `/api/wallet/create`           | GET  | Create new wallet              |
-| **Wallet**     | `sendTransaction()`       | `/api/wallet/send`             | POST | Send raw transaction           |
+| Category       | Method                          | Endpoint                            | HTTP | Description                    |
+| -------------- | ------------------------------- | ----------------------------------- | ---- | ------------------------------ |
+| **Blockchain** | `getTransaction()`              | `/api/blockchain/transaction`       | GET  | Get transaction details        |
+| **Blockchain** | `listTransactions()`            | `/api/blockchain/transactions`      | GET  | List 7-day transaction history |
+| **Info**       | `getSupportedCoins()`           | `/api/info/supported-coins`         | GET  | Get supported coins metadata   |
+| **Info**       | `validateWalletAddress()`       | `/api/info/wallet-validation`       | GET  | Validate wallet address        |
+| **Wallet**     | `getWalletBalance()`            | `/api/wallet/balance`               | POST | Get wallet balance             |
+| **Wallet**     | `createWallet()`                | `/api/wallet/create`                | GET  | Create new wallet              |
+| **Wallet**     | `generateAddressFromMnemonic()` | `/api/wallet/address-from-mnemonic` | POST | Generate address from mnemonic |
+| **Wallet**     | `sendTransaction()`             | `/api/wallet/send`                  | POST | Send raw transaction           |
 
 ---
 

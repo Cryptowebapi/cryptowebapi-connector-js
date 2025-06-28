@@ -150,17 +150,17 @@ export interface SupportedCoinsRequest {
 }
 
 export interface CoinData {
-  coin: string;
+  name: string;
   shortName: string;
-  tag: string | null;
+  tag: string;
   symbol: string;
   type: string;
   decimals: number;
-  contractAddress: string | null;
-  testnetContractAddress: string | null;
-  isToken: boolean;
-  usdRate: number | null;
-  network: SupportedNetwork;
+  contractAddress: string;
+  provider: string;
+  usdRate: number;
+  usdRateUpdatedAt: string;
+  logo: string;
 }
 
 export interface SupportedCoinsResponse extends Array<CoinData> {}
@@ -242,4 +242,26 @@ export interface SendTransactionResponse {
   message: string;
   network: SupportedNetwork;
   data: SendTransactionData;
+}
+
+// Address from Mnemonic Types
+export interface AddressFromMnemonicRequest {
+  network: SupportedNetwork;
+  mnemonic: string;
+  mode?: 'mainnet' | 'testnet';
+}
+
+export interface AddressFromMnemonicData {
+  network: SupportedNetwork;
+  address: string;
+  publicKey: string;
+  privateKey: string;
+  path: string;
+}
+
+export interface AddressFromMnemonicResponse {
+  success: boolean;
+  message: string;
+  network: SupportedNetwork;
+  data: AddressFromMnemonicData;
 }
