@@ -61,66 +61,16 @@ export class CryptoWebApiClient {
    * GET /api/blockchain/transaction
    */
   async getTransaction(request: GetTransactionRequest): Promise<GetTransactionResponse> {
-    const params = {
-      network: request.network,
-      transactionId: request.transactionId,
-    };
-
-    return this.apiRequest.makeRequest<GetTransactionResponse>(
-      'GET',
-      '/api/blockchain/transaction',
-      undefined,
-      { params }
-    );
+    const { getTransaction: moduleGetTransaction } = await import('./modules/get-transaction');
+    return moduleGetTransaction(request, this.apiRequest);
   }
   /**
    * List Transactions (7-Day History)
    * GET /api/blockchain/transactions
    */
   async listTransactions(request: ListTransactionsRequest): Promise<ListTransactionsResponse> {
-    const params: any = {
-      network: request.network,
-    };
-
-    // Add optional parameters if they exist
-    if (request.address) params.address = request.address;
-    if (request.fromAddress) params.fromAddress = request.fromAddress;
-    if (request.toAddress) params.toAddress = request.toAddress;
-    if (request.txType) params.txType = request.txType;
-    if (request.tokenSymbol) params.tokenSymbol = request.tokenSymbol;
-
-    // Value filters
-    if (request.fromValue !== undefined) params.fromValue = request.fromValue;
-    if (request.toValue !== undefined) params.toValue = request.toValue;
-    if (request.minValueDecimal !== undefined) params.minValueDecimal = request.minValueDecimal;
-    if (request.maxValueDecimal !== undefined) params.maxValueDecimal = request.maxValueDecimal;
-
-    // Fee filters
-    if (request.minFeeDecimal !== undefined) params.minFeeDecimal = request.minFeeDecimal;
-    if (request.maxFeeDecimal !== undefined) params.maxFeeDecimal = request.maxFeeDecimal;
-
-    // Date filters
-    if (request.fromTimestamp) params.fromTimestamp = request.fromTimestamp;
-    if (request.toTimestamp) params.toTimestamp = request.toTimestamp;
-    if (request.startDate) params.startDate = request.startDate;
-    if (request.endDate) params.endDate = request.endDate;
-
-    // Sorting
-    if (request.sortBy) params.sortBy = request.sortBy;
-    if (request.sortOrder) params.sortOrder = request.sortOrder;
-
-    // Pagination
-    if (request.limit !== undefined) params.limit = request.limit;
-    if (request.offset !== undefined) params.offset = request.offset;
-
-    return this.apiRequest.makeRequest<ListTransactionsResponse>(
-      'GET',
-      '/api/blockchain/transactions',
-      undefined,
-      {
-        params,
-      }
-    );
+    const { listTransactions: moduleListTransactions } = await import('./modules/list-transactions');
+    return moduleListTransactions(request, this.apiRequest);
   }
   // ========================================
   // INFO ENDPOINT
@@ -130,21 +80,8 @@ export class CryptoWebApiClient {
    * GET /api/info/supported-coins
    */
   async getSupportedCoins(request: SupportedCoinsRequest): Promise<SupportedCoinsResponse> {
-    const params: any = {};
-
-    // Only add network parameter if provided
-    if (request.network) {
-      params.network = request.network;
-    }
-
-    return this.apiRequest.makeRequest<SupportedCoinsResponse>(
-      'GET',
-      '/api/info/supported-coins',
-      undefined,
-      {
-        params,
-      }
-    );
+    const { getSupportedCoins: moduleGetSupportedCoins } = await import('./modules/get-supported-coins');
+    return moduleGetSupportedCoins(request, this.apiRequest);
   }
 
   /**
@@ -152,14 +89,8 @@ export class CryptoWebApiClient {
    * GET /api/info/wallet-validation
    */
   async validateWalletAddress(request: WalletValidationRequest): Promise<WalletValidationResponse> {
-    const params = {
-      network: request.network,
-      address: request.address,
-    };
-
-    return this.apiRequest.makeRequest<any>('GET', '/api/info/wallet-validation', undefined, {
-      params,
-    });
+    const { validateWalletAddress: moduleValidateWalletAddress } = await import('./modules/validate-wallet-address');
+    return moduleValidateWalletAddress(request, this.apiRequest);
   }
   // ========================================
   // WALLET ENDPOINT
@@ -170,28 +101,29 @@ export class CryptoWebApiClient {
    * POST /api/wallet/balance
    */
   async getWalletBalance(request: WalletBalanceRequest): Promise<WalletBalanceResponse> {
-    const requestBody = {
-      network: request.network,
-      address: request.address,
-      mode: request.mode || 'mainnet',
-      ...(request.tokens && { tokens: request.tokens }),
-    };
-
-    return this.apiRequest.makeRequest<any>('POST', '/api/wallet/balance', requestBody);
+    const { getWalletBalance: moduleGetWalletBalance } = await import('./modules/get-wallet-balance');
+    return moduleGetWalletBalance(request, this.apiRequest);
   }
 
   /**
    * Create a New Wallet
-   * GET /api/wallet/create
+   * This method can work in two modes:
+   * 1. Using CryptoWebAPI (default)
+   * 2. Using local wallet generation (when useLocalGeneration is true)
+   *
+   * @param request - The wallet creation request parameters
+   * @param useLocalGeneration - Whether to use local wallet generation instead of CryptoWebAPI
+   * @returns Promise<CreateWalletResponse> - The created wallet details
    */
-  async createWallet(request: CreateWalletRequest): Promise<CreateWalletResponse> {
-    const params = {
-      network: request.network,
-    };
+  async createWallet(
+    request: CreateWalletRequest,
+    useLocalGeneration: boolean = false
+  ): Promise<CreateWalletResponse> {
+    // Import the createWallet function from the module
+    const { createWallet: moduleCreateWallet } = await import('./modules/create-wallet');
 
-    return this.apiRequest.makeRequest<any>('GET', '/api/wallet/create', undefined, {
-      params,
-    });
+    // Call the module function with or without apiRequest based on useLocalGeneration
+    return moduleCreateWallet(request, useLocalGeneration ? undefined : this.apiRequest);
   }
 
   /**
@@ -199,13 +131,8 @@ export class CryptoWebApiClient {
    * POST /api/wallet/send
    */
   async sendTransaction(request: SendTransactionRequest): Promise<SendTransactionResponse> {
-    const requestBody = {
-      rawTx: request.rawTx,
-      network: request.network,
-      mode: request.mode || 'mainnet',
-    };
-
-    return this.apiRequest.makeRequest<any>('POST', '/api/wallet/send', requestBody);
+    const { sendTransaction: moduleSendTransaction } = await import('./modules/send-transaction');
+    return moduleSendTransaction(request, this.apiRequest);
   }
 
   /**
@@ -215,17 +142,8 @@ export class CryptoWebApiClient {
   async generateAddressFromMnemonic(
     request: AddressFromMnemonicRequest
   ): Promise<AddressFromMnemonicResponse> {
-    const requestBody = {
-      network: request.network,
-      mnemonic: request.mnemonic,
-      mode: request.mode || 'mainnet',
-    };
-
-    return this.apiRequest.makeRequest<any>(
-      'POST',
-      '/api/wallet/address-from-mnemonic',
-      requestBody
-    );
+    const { generateAddressFromMnemonic: moduleGenerateAddressFromMnemonic } = await import('./modules/generate-address-from-mnemonic');
+    return moduleGenerateAddressFromMnemonic(request, this.apiRequest);
   }
 
   // ========================================
@@ -241,20 +159,8 @@ export class CryptoWebApiClient {
    * @returns Promise<FeeDataResponse> - Current fee data for the network
    */
   async getFeeData(request: FeeDataRequest): Promise<FeeDataResponse> {
-    const params: any = {
-      network: request.network,
-    };
-
-    if (request.mode) {
-      params.mode = request.mode;
-    }
-
-    return this.apiRequest.makeRequest<FeeDataResponse>(
-      'GET',
-      '/api/blockchain/feeData',
-      undefined,
-      { params }
-    );
+    const { getFeeData: moduleGetFeeData } = await import('./modules/get-fee-data');
+    return moduleGetFeeData(request, this.apiRequest);
   }
 
   /**
@@ -266,18 +172,8 @@ export class CryptoWebApiClient {
    * @returns Promise<AccountNonceResponse> - Current nonce for the address
    */
   async getAccountNonce(request: AccountNonceRequest): Promise<AccountNonceResponse> {
-    const params = {
-      network: request.network,
-      address: request.address,
-      ...(request.mode && { mode: request.mode }),
-    };
-
-    return this.apiRequest.makeRequest<AccountNonceResponse>(
-      'GET',
-      '/api/blockchain/nonce',
-      undefined,
-      { params }
-    );
+    const { getAccountNonce: moduleGetAccountNonce } = await import('./modules/get-account-nonce');
+    return moduleGetAccountNonce(request, this.apiRequest);
   }
 
   // ========================================
@@ -290,174 +186,8 @@ export class CryptoWebApiClient {
    * Note: Requires 'ethers' package to be installed for EVM-compatible networks (Ethereum, BNB)
    */
   async buildTransaction(request: TransactionBuilderRequest): Promise<TransactionBuilderResponse> {
-    const { network } = request;
-
-    // Check if this is an EVM-compatible network
-    if (!this.isEvmNetwork(network)) {
-      return this.buildNonEvmTransaction(request);
-    }
-
-    const {
-      privateKey,
-      receiver,
-      value,
-      mode = 'mainnet',
-      contractAddress,
-      contractDecimal,
-    } = request;
-
-    if (!privateKey || !receiver || !value) {
-      throw new Error('Missing required fields: privateKey, receiver, or value');
-    }
-
-    // Try to import ethers - it should be installed by the user
-    let ethers: any;
-    try {
-      // Use dynamic import with require() style to avoid TypeScript compile-time errors
-      ethers = await Function('return import("ethers")')();
-    } catch (error) {
-      throw new Error(
-        'ethers package is required for EVM transaction building. Please install it: npm install ethers'
-      );
-    }
-
-    const fixedPrivateKey = privateKey.startsWith('0x') ? privateKey : `0x${privateKey}`;
-
-    // Create wallet without provider first
-    const wallet = new ethers.Wallet(fixedPrivateKey);
-
-    // Get nonce from CryptoWebAPI
-    const nonceResponse = await this.getAccountNonce({
-      network,
-      address: wallet.address,
-      mode,
-    });
-
-    if (!nonceResponse.success) {
-      throw new Error(`Failed to get nonce: ${nonceResponse.message}`);
-    }
-
-    // Get fee data from CryptoWebAPI
-    const feeDataResponse = await this.getFeeData({
-      network,
-      mode,
-    });
-
-    if (!feeDataResponse.success) {
-      throw new Error(`Failed to get fee data: ${feeDataResponse.message}`);
-    }
-
-    const nonce = nonceResponse.data.nonce;
-    const gasPrice = BigInt(feeDataResponse.data.gasPrice);
-
-    // Determine chainId based on network and mode
-    const chainId = this.getChainId(network, mode);
-
-    const isToken = contractAddress && contractDecimal;
-    let unsignedTx: any; // Using any to avoid ethers type dependency
-    let gasLimit: bigint;
-
-    if (isToken) {
-      // ERC20/BEP20 Token transaction
-      const TOKEN_ABI = ['function transfer(address to, uint256 amount) public returns (bool)'];
-
-      const contract = new ethers.Contract(contractAddress, TOKEN_ABI);
-      const amount = ethers.parseUnits(value.toString(), contractDecimal);
-
-      const data = contract.interface.encodeFunctionData('transfer', [receiver, amount]);
-
-      // Use a reasonable gas limit for token transfers
-      // BNB Smart Chain typically uses less gas than Ethereum
-      gasLimit = network === 'bnb' ? BigInt(60_000) : BigInt(100_000);
-
-      unsignedTx = {
-        to: contractAddress,
-        data,
-        value: 0,
-        gasLimit,
-        nonce,
-        gasPrice,
-        chainId,
-      };
-    } else {
-      // Native token transaction (ETH, BNB)
-      gasLimit = BigInt(21_000);
-      unsignedTx = {
-        to: receiver,
-        value: ethers.parseEther(value.toString()),
-        gasLimit,
-        nonce,
-        gasPrice,
-        chainId,
-      };
-    }
-
-    // Sign the transaction
-    const rawTx = await wallet.signTransaction(unsignedTx);
-    const fee = gasPrice * gasLimit;
-    const estimatedFeeEth = ethers.formatEther(fee.toString());
-
-    const responseData = {
-      status: 'build' as const,
-      type: isToken
-        ? network === 'bnb'
-          ? ('bep20' as const)
-          : ('erc20' as const)
-        : ('native' as const),
-      from: wallet.address,
-      to: unsignedTx.to as string,
-      value: value.toString(),
-      rawTx,
-      gasPrice: gasPrice.toString(),
-      gasLimit: gasLimit.toString(),
-      estimatedFeeEth,
-      nonce: String(nonce),
-      chainId: String(chainId),
-    };
-
-    return {
-      success: true,
-      message: `Transaction built successfully for ${network} network`,
-      network,
-      data: responseData,
-    };
-  }
-
-  /**
-   * Helper method to get chainId based on network and mode
-   */
-  private getChainId(network: SupportedNetwork, mode: 'mainnet' | 'testnet'): bigint {
-    const chainIds: Record<SupportedNetwork, { mainnet: bigint; testnet: bigint }> = {
-      ethereum: { mainnet: 1n, testnet: 11155111n }, // Sepolia
-      bnb: { mainnet: 56n, testnet: 97n }, // BSC Testnet
-      bitcoin: { mainnet: 0n, testnet: 0n }, // Bitcoin doesn't use chainId, using 0 as placeholder
-      tron: { mainnet: BigInt(0x2b6653dc), testnet: BigInt(0x94a9059e) }, // Tron mainnet and Nile testnet
-    };
-
-    return chainIds[network][mode];
-  }
-
-  /**
-   * Helper method to check if network supports EVM-style transactions
-   */
-  private isEvmNetwork(network: SupportedNetwork): boolean {
-    return network === 'ethereum' || network === 'bnb';
-  }
-
-  /**
-   * Build Transaction for Non-EVM Networks (Bitcoin, Tron)
-   * This is a placeholder - actual implementation would require network-specific libraries
-   */
-  private async buildNonEvmTransaction(
-    request: TransactionBuilderRequest
-  ): Promise<TransactionBuilderResponse> {
-    const { network } = request;
-
-    // For now, throw an error as non-EVM networks require specialized handling
-    throw new Error(
-      `Transaction building for ${network} network is not yet implemented. ` +
-        `This network requires specialized libraries and handling.`
-    );
+    const { buildTransaction: moduleBuildTransaction } = await import('./modules/build-transaction');
+    return moduleBuildTransaction(request, this.apiRequest);
   }
 
   // ========================================
