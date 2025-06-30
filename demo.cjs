@@ -160,3 +160,25 @@ console.log('\n🎉 Module Architecture Demo Completed Successfully!');
 console.log('   ✅ All modules are properly structured and callable');
 console.log('   ✅ Both modular and legacy APIs are fully functional');
 console.log('   ✅ The architecture is production-ready! 🚀');
+
+// test the functions
+
+// create ethereum wallet
+let createEthereumWallet = mockLocalCall('createWallet', { network: 'ethereum' });
+console.log(`\nCreated Ethereum wallet`, createEthereumWallet);
+
+// create bitcoin wallet
+let createBitcoinWallet = mockLocalCall('createWallet', { network: 'bitcoin' });
+console.log(`Created Bitcoin wallet`, createBitcoinWallet);
+
+// create tron wallet
+let createTronWallet = mockLocalCall('createWallet', { network: 'tron' });
+console.log(`Created Tron wallet`, createTronWallet);
+
+// create bnb wallet
+let createBnbWallet = mockLocalCall('createWallet', { network: 'bnb' });
+console.log(`Created BNB wallet`, createBnbWallet);
+
+// get transaction details
+let getTransaction = mockApiCall('getTransaction', { hash: '0x1234567890abcdef' });
+console.log(`\nTransaction details for hash 0x1234567890abcdef`, getTransaction);

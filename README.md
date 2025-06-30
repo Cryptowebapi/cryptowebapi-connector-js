@@ -47,15 +47,17 @@ const balance = await client.getWalletBalance({
 
 ### 2. Direct Module Imports (Advanced)
 ```typescript
-import { createWallet, getWalletBalance } from 'cryptowebapi-connector-js';
+import { createWallet, getWalletBalance, ApiRequest } from 'cryptowebapi-connector-js';
 
 // Create wallet locally (no API needed)
 const wallet = await createWallet({ network: 'ethereum' });
 
-// Use API modules (need apiRequest instance)
-const client = new CryptoWebApiClient({ apiKey: 'your-key' });
-const apiRequest = (client as any).apiRequest;
-const balance = await getWalletBalance(request, apiRequest);
+// Use API modules with a custom API request instance
+const apiRequest = new ApiRequest({ apiKey: 'your-key' });
+const balance = await getWalletBalance(
+  { network: 'ethereum', address: wallet.address },
+  apiRequest
+);
 ```
 
 ### 3. Factory Pattern (Expert)

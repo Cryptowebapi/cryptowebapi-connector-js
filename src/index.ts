@@ -1,6 +1,7 @@
 export * from './client';
 export * from './types';
 export * from './errors';
+export * from './lib/request';
 
 // Export all modules for modular usage
 export * from './modules/create-wallet';

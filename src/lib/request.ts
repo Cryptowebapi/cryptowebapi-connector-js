@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosError } from 'axios';
 import { CryptoApiConfig } from '../types';
-import { isAxiosError } from '../errors';
+import { isAxiosError, ApiRequestError } from '../errors';
 
 export class ApiRequest {
   private axios: AxiosInstance;
@@ -46,13 +46,23 @@ export class ApiRequest {
         return Promise.reject(error);
       }
     );
-  }  async makeRequest<T>(
+  }  /**
+   * Make an API request with automatic retries
+   * 
+   * @param method - HTTP method
+   * @param endpoint - API endpoint
+   * @param data - Request data (for POST/PUT)
+   * @param config - Additional Axios config
+   * @returns Promise with the response data
+   * @throws ApiRequestError if the request fails after all retry attempts
+   */
+  async makeRequest<T>(
     method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     endpoint: string,
-    data?: any,
+    data?: unknown,
     config?: AxiosRequestConfig
-  ): Promise<any> {
-    let lastError: any;
+  ): Promise<T> {
+    let lastError: Error = new Error('Unknown error');
 
     for (let attempt = 1; attempt <= this.config.retryAttempts!; attempt++) {
       try {
@@ -63,13 +73,21 @@ export class ApiRequest {
           ...config,
         });
 
-        return response.data;
+        return response.data as T;
       } catch (error) {
-        lastError = error;        // Don't retry on authentication, validation, or not found errors
-        if (isAxiosError(error) && error.response) {
-          const status = error.response.status;
+        // Convert to Error type if it's not already
+        const err = error instanceof Error ? error : new Error(String(error));
+        lastError = err;
+
+        // Don't retry on authentication, validation, or not found errors
+        if (isAxiosError(err) && err.response) {
+          const status = err.response.status;
           if (status === 401 || status === 400 || status === 404) {
-            throw error;
+            throw new ApiRequestError(
+              `API request failed: ${err.message}`,
+              err,
+              status
+            );
           }
         }
 
@@ -79,7 +97,19 @@ export class ApiRequest {
       }
     }
 
-    throw lastError;
+    // If we get here, all retry attempts failed
+    if (isAxiosError(lastError)) {
+      throw new ApiRequestError(
+        `API request failed after ${this.config.retryAttempts} attempts: ${lastError.message}`,
+        lastError,
+        lastError.response?.status
+      );
+    }
+
+    throw new ApiRequestError(
+      `API request failed after ${this.config.retryAttempts} attempts: ${lastError.message}`,
+      lastError
+    );
   }
 
   private delay(ms: number): Promise<void> {
@@ -102,7 +132,7 @@ export class ApiRequest {
    */
   updateConfig(newConfig: Partial<CryptoApiConfig>): void {
     this.config = { ...this.config, ...newConfig };
-    
+
     // Update axios instance with new timeout if provided
     if (newConfig.timeout !== undefined) {
       this.axios.defaults.timeout = newConfig.timeout;
