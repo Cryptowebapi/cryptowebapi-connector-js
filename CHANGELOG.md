@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2025-07-01
+
+### Added
+- **🔑 New `recoverFromMnemonic` function** - Offline wallet recovery from BIP-39 mnemonic phrases
+  - Supports Ethereum, Bitcoin, BNB Smart Chain, and Tron
+  - Fully offline operation (no API calls required)
+  - Returns comprehensive wallet data (address, publicKey, privateKey, path)
+- **📊 New `getBlockchainMeta` endpoint** - Unified blockchain metadata
+  - Combines fee data, gas limits, chain ID, nonce, and balance in single call
+  - Replaces separate `getFeeData` and `getAccountNonce` endpoints
+- **✨ Full ES Module support** - Native ES module compatibility
+- **🏗️ Modular service architecture** - Factory pattern for blockchain services
+
+### Changed
+- **⚡ Performance improvements** - Dynamic imports for better tree-shaking
+- **📝 Updated TypeScript definitions** - Better type safety and IntelliSense
+- **🔧 Modernized build system** - ES modules as primary format
+
+### Deprecated
+- `generateAddressFromMnemonic` - Use `recoverFromMnemonic` instead (more comprehensive)
+- `getFeeData` - Use `getBlockchainMeta` instead (unified endpoint)  
+- `getAccountNonce` - Use `getBlockchainMeta` instead (unified endpoint)
+
+### Removed
+- Legacy CommonJS-only exports (ES modules now supported)
+
+### Fixed
+- ES module import/export compatibility issues
+- TypeScript strict mode compliance
+- Bundle size optimization
+
 ## [Unreleased]
 
 ## [1.0.0] - 2025-06-19

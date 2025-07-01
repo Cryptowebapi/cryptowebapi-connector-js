@@ -1,7 +1,7 @@
 {
   "name": "cryptowebapi-connector-js",
-  "version": "3.0.1",
-  "description": "A TypeScript/JavaScript wrapper for crypto web APIs with built-in error handling, retries, and type safety",
+  "version": "3.1.0",
+  "description": "A TypeScript/JavaScript wrapper for crypto web APIs with offline wallet recovery, ES modules support, and comprehensive type safety",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
