@@ -1,5 +1,5 @@
-import { AccountNonceRequest, AccountNonceResponse } from '../../types';
-import { ApiRequest } from '../../lib/request';
+import { AccountNonceRequest, AccountNonceResponse } from '../../types.js';
+import { ApiRequest } from '../../lib/request.js';
 
 /**
  * Get Account Nonce Module

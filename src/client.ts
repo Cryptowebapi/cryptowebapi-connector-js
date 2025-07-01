@@ -29,8 +29,8 @@ import {
   AccountNonceResponse,
   TransactionBuilderRequest,
   TransactionBuilderResponse,
-} from './types';
-import { ApiRequest } from './lib/request';
+} from './types.js';
+import { ApiRequest } from './lib/request.js';
 
 export class CryptoWebApiClient {
   private apiRequest: ApiRequest;
@@ -61,7 +61,7 @@ export class CryptoWebApiClient {
    * GET /api/blockchain/transaction
    */
   async getTransaction(request: GetTransactionRequest): Promise<GetTransactionResponse> {
-    const { getTransaction: moduleGetTransaction } = await import('./modules/get-transaction');
+    const { getTransaction: moduleGetTransaction } = await import('./modules/get-transaction/index.js');
     return moduleGetTransaction(request, this.apiRequest);
   }
   /**
@@ -69,7 +69,7 @@ export class CryptoWebApiClient {
    * GET /api/blockchain/transactions
    */
   async listTransactions(request: ListTransactionsRequest): Promise<ListTransactionsResponse> {
-    const { listTransactions: moduleListTransactions } = await import('./modules/list-transactions');
+    const { listTransactions: moduleListTransactions } = await import('./modules/list-transactions/index.js');
     return moduleListTransactions(request, this.apiRequest);
   }
   // ========================================
@@ -80,7 +80,7 @@ export class CryptoWebApiClient {
    * GET /api/info/supported-coins
    */
   async getSupportedCoins(request: SupportedCoinsRequest): Promise<SupportedCoinsResponse> {
-    const { getSupportedCoins: moduleGetSupportedCoins } = await import('./modules/get-supported-coins');
+    const { getSupportedCoins: moduleGetSupportedCoins } = await import('./modules/get-supported-coins/index.js');
     return moduleGetSupportedCoins(request, this.apiRequest);
   }
 
@@ -89,7 +89,7 @@ export class CryptoWebApiClient {
    * GET /api/info/wallet-validation
    */
   async validateWalletAddress(request: WalletValidationRequest): Promise<WalletValidationResponse> {
-    const { validateWalletAddress: moduleValidateWalletAddress } = await import('./modules/validate-wallet-address');
+    const { validateWalletAddress: moduleValidateWalletAddress } = await import('./modules/validate-wallet-address/index.js');
     return moduleValidateWalletAddress(request, this.apiRequest);
   }
   // ========================================
@@ -101,7 +101,7 @@ export class CryptoWebApiClient {
    * POST /api/wallet/balance
    */
   async getWalletBalance(request: WalletBalanceRequest): Promise<WalletBalanceResponse> {
-    const { getWalletBalance: moduleGetWalletBalance } = await import('./modules/get-wallet-balance');
+    const { getWalletBalance: moduleGetWalletBalance } = await import('./modules/get-wallet-balance/index.js');
     return moduleGetWalletBalance(request, this.apiRequest);
   }
 
@@ -120,7 +120,7 @@ export class CryptoWebApiClient {
     useLocalGeneration: boolean = false
   ): Promise<CreateWalletResponse> {
     // Import the createWallet function from the module
-    const { createWallet: moduleCreateWallet } = await import('./modules/create-wallet');
+    const { createWallet: moduleCreateWallet } = await import('./modules/create-wallet/index.js');
 
     // Call the module function with or without apiRequest based on useLocalGeneration
     return moduleCreateWallet(request, useLocalGeneration ? undefined : this.apiRequest);
@@ -131,7 +131,7 @@ export class CryptoWebApiClient {
    * POST /api/wallet/send
    */
   async sendTransaction(request: SendTransactionRequest): Promise<SendTransactionResponse> {
-    const { sendTransaction: moduleSendTransaction } = await import('./modules/send-transaction');
+    const { sendTransaction: moduleSendTransaction } = await import('./modules/send-transaction/index.js');
     return moduleSendTransaction(request, this.apiRequest);
   }
 
@@ -142,7 +142,7 @@ export class CryptoWebApiClient {
   async generateAddressFromMnemonic(
     request: AddressFromMnemonicRequest
   ): Promise<AddressFromMnemonicResponse> {
-    const { generateAddressFromMnemonic: moduleGenerateAddressFromMnemonic } = await import('./modules/generate-address-from-mnemonic');
+    const { generateAddressFromMnemonic: moduleGenerateAddressFromMnemonic } = await import('./modules/generate-address-from-mnemonic/index.js');
     return moduleGenerateAddressFromMnemonic(request, this.apiRequest);
   }
 
@@ -159,7 +159,7 @@ export class CryptoWebApiClient {
    * @returns Promise<FeeDataResponse> - Current fee data for the network
    */
   async getFeeData(request: FeeDataRequest): Promise<FeeDataResponse> {
-    const { getFeeData: moduleGetFeeData } = await import('./modules/get-fee-data');
+    const { getFeeData: moduleGetFeeData } = await import('./modules/get-fee-data/index.js');
     return moduleGetFeeData(request, this.apiRequest);
   }
 
@@ -172,7 +172,7 @@ export class CryptoWebApiClient {
    * @returns Promise<AccountNonceResponse> - Current nonce for the address
    */
   async getAccountNonce(request: AccountNonceRequest): Promise<AccountNonceResponse> {
-    const { getAccountNonce: moduleGetAccountNonce } = await import('./modules/get-account-nonce');
+    const { getAccountNonce: moduleGetAccountNonce } = await import('./modules/get-account-nonce/index.js');
     return moduleGetAccountNonce(request, this.apiRequest);
   }
 
@@ -186,7 +186,7 @@ export class CryptoWebApiClient {
    * Note: Requires 'ethers' package to be installed for EVM-compatible networks (Ethereum, BNB)
    */
   async buildTransaction(request: TransactionBuilderRequest): Promise<TransactionBuilderResponse> {
-    const { buildTransaction: moduleBuildTransaction } = await import('./modules/build-transaction');
+    const { buildTransaction: moduleBuildTransaction } = await import('./modules/build-transaction/index.js');
     return moduleBuildTransaction(request, this.apiRequest);
   }
 

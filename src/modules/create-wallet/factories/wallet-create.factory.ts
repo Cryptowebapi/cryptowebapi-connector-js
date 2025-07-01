@@ -1,5 +1,5 @@
-import { WalletCreator } from '../interfaces/wallet-creator.interface';
-import { SupportedNetwork } from '../../../types';
+import { WalletCreator } from '../interfaces/wallet-creator.interface.js';
+import { SupportedNetwork } from '../../../types.js';
 
 /**
  * Factory class for creating network-specific wallet services
@@ -23,10 +23,10 @@ export class WalletCreateFactory {
       { BnbWalletService },
       { TronWalletService }
     ] = await Promise.all([
-      import('../services/ethereum-wallet.service'),
-      import('../services/bitcoin-wallet.service'),
-      import('../services/bnb-wallet.service'),
-      import('../services/tron-wallet.service')
+      import('../services/ethereum-wallet.service.js'),
+      import('../services/bitcoin-wallet.service.js'),
+      import('../services/bnb-wallet.service.js'),
+      import('../services/tron-wallet.service.js')
     ]);
 
     this.services.set('ethereum', new EthereumWalletService());

@@ -1,5 +1,5 @@
-import { GetTransactionRequest, GetTransactionResponse } from '../../types';
-import { ApiRequest } from '../../lib/request';
+import { GetTransactionRequest, GetTransactionResponse } from '../../types.js';
+import { ApiRequest } from '../../lib/request.js';
 
 /**
  * Get Transaction Module

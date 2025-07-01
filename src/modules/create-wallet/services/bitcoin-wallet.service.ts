@@ -1,4 +1,4 @@
-import { WalletCreator, WalletCreationResult } from '../interfaces/wallet-creator.interface';
+import { WalletCreator, WalletCreationResult } from '../interfaces/wallet-creator.interface.js';
 
 /**
  * Bitcoin wallet creation service

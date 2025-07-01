@@ -1,18 +1,18 @@
-import { CreateWalletRequest, CreateWalletResponse } from '../../types';
-import { ApiRequest } from '../../lib/request';
-import { WalletCreateFactory } from './factories/wallet-create.factory';
-import { CreateWalletOptions } from './types/wallet-creation.types';
+import { CreateWalletRequest, CreateWalletResponse } from '../../types.js';
+import { ApiRequest } from '../../lib/request.js';
+import { WalletCreateFactory } from './factories/wallet-create.factory.js';
+import { CreateWalletOptions } from './types/wallet-creation.types.js';
 
 // Export types and interfaces for external use
-export * from './interfaces/wallet-creator.interface';
-export * from './types/wallet-creation.types';
-export * from './factories/wallet-create.factory';
+export * from './interfaces/wallet-creator.interface.js';
+export * from './types/wallet-creation.types.js';
+export * from './factories/wallet-create.factory.js';
 
 // Export services for direct use if needed
-export * from './services/ethereum-wallet.service';
-export * from './services/bitcoin-wallet.service';
-export * from './services/bnb-wallet.service';
-export * from './services/tron-wallet.service';
+export * from './services/ethereum-wallet.service.js';
+export * from './services/bitcoin-wallet.service.js';
+export * from './services/bnb-wallet.service.js';
+export * from './services/tron-wallet.service.js';
 
 /**
  * Create a new wallet for the specified network

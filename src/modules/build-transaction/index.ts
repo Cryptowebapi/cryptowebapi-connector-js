@@ -1,18 +1,18 @@
-import { TransactionBuilderRequest, TransactionBuilderResponse } from '../../types';
-import { ApiRequest } from '../../lib/request';
-import { TransactionBuilderFactory } from './factories/transaction-builder.factory';
-import { BuildTransactionOptions } from './types/transaction-builder.types';
+import { TransactionBuilderRequest, TransactionBuilderResponse } from '../../types.js';
+import { ApiRequest } from '../../lib/request.js';
+import { TransactionBuilderFactory } from './factories/transaction-builder.factory.js';
+import { BuildTransactionOptions } from './types/transaction-builder.types.js';
 
 // Export types and interfaces for external use
-export * from './interfaces/transaction-builder.interface';
-export * from './types/transaction-builder.types';
-export * from './factories/transaction-builder.factory';
+export * from './interfaces/transaction-builder.interface.js';
+export * from './types/transaction-builder.types.js';
+export * from './factories/transaction-builder.factory.js';
 
 // Export services for direct use if needed
-export * from './services/ethereum-transaction.service';
-export * from './services/bnb-transaction.service';
-export * from './services/bitcoin-transaction.service';
-export * from './services/tron-transaction.service';
+export * from './services/ethereum-transaction.service.js';
+export * from './services/bnb-transaction.service.js';
+export * from './services/bitcoin-transaction.service.js';
+export * from './services/tron-transaction.service.js';
 
 /**
  * Build and sign a transaction for the specified network
@@ -49,8 +49,8 @@ async function buildTransactionWithApi(
 
   // Import required modules dynamically
   const [{ getAccountNonce }, { getFeeData }] = await Promise.all([
-    import('../get-account-nonce'),
-    import('../get-fee-data')
+    import('../get-account-nonce/index.js'),
+    import('../get-fee-data/index.js')
   ]);
 
   // Get wallet address from private key

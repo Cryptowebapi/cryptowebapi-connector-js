@@ -4,7 +4,7 @@
  * Defines the contract for transaction building services
  */
 
-import { BuildTransactionOptions, BuildTransactionResult } from '../types/transaction-builder.types';
+import { BuildTransactionOptions, BuildTransactionResult } from '../types/transaction-builder.types.js';
 
 /**
  * Interface for transaction building services

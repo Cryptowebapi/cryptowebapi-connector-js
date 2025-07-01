@@ -1,5 +1,5 @@
-import { WalletBalanceRequest, WalletBalanceResponse } from '../../types';
-import { ApiRequest } from '../../lib/request';
+import { WalletBalanceRequest, WalletBalanceResponse } from '../../types.js';
+import { ApiRequest } from '../../lib/request.js';
 
 /**
  * Get Wallet Balance Module

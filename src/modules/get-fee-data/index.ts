@@ -1,5 +1,5 @@
-import { FeeDataRequest, FeeDataResponse } from '../../types';
-import { ApiRequest } from '../../lib/request';
+import { FeeDataRequest, FeeDataResponse } from '../../types.js';
+import { ApiRequest } from '../../lib/request.js';
 
 /**
  * Get Fee Data Module

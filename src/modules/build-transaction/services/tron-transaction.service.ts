@@ -4,8 +4,8 @@
  * Handles transaction building for Tron network
  */
 
-import { ITransactionBuilder } from '../interfaces/transaction-builder.interface';
-import { BuildTransactionOptions, BuildTransactionResult } from '../types/transaction-builder.types';
+import { ITransactionBuilder } from '../interfaces/transaction-builder.interface.js';
+import { BuildTransactionOptions, BuildTransactionResult } from '../types/transaction-builder.types.js';
 
 export class TronTransactionService implements ITransactionBuilder {
   /**

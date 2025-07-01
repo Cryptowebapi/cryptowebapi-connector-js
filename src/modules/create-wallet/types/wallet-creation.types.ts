@@ -1,4 +1,4 @@
-import { SupportedNetwork } from '../../../types';
+import { SupportedNetwork } from '../../../types.js';
 
 /**
  * Request parameters for wallet creation

@@ -1,5 +1,5 @@
-import { SupportedCoinsRequest, SupportedCoinsResponse } from '../../types';
-import { ApiRequest } from '../../lib/request';
+import { SupportedCoinsRequest, SupportedCoinsResponse } from '../../types.js';
+import { ApiRequest } from '../../lib/request.js';
 
 /**
  * Get Supported Coins Module

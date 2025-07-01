@@ -4,14 +4,14 @@
  * Factory class for creating network-specific transaction builders
  */
 
-import { SupportedNetwork } from '../../../types';
-import { ITransactionBuilder } from '../interfaces/transaction-builder.interface';
+import { SupportedNetwork } from '../../../types.js';
+import { ITransactionBuilder } from '../interfaces/transaction-builder.interface.js';
 import {
   EthereumTransactionService,
   BnbTransactionService,
   BitcoinTransactionService,
   TronTransactionService,
-} from '../services';
+} from '../services/index.js';
 
 export class TransactionBuilderFactory {
   private services: Map<SupportedNetwork, ITransactionBuilder> = new Map();

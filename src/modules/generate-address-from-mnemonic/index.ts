@@ -1,5 +1,5 @@
-import { AddressFromMnemonicRequest, AddressFromMnemonicResponse } from '../../types';
-import { ApiRequest } from '../../lib/request';
+import { AddressFromMnemonicRequest, AddressFromMnemonicResponse } from '../../types.js';
+import { ApiRequest } from '../../lib/request.js';
 
 /**
  * Generate Address from Mnemonic Module

@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosError } from 'axios';
-import { CryptoApiConfig } from '../types';
-import { isAxiosError, ApiRequestError } from '../errors';
+import { CryptoApiConfig } from '../types.js';
+import { isAxiosError, ApiRequestError } from '../errors.js';
 
 export class ApiRequest {
   private axios: AxiosInstance;

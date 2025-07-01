@@ -1,5 +1,5 @@
-import { WalletValidationRequest, WalletValidationResponse } from '../../types';
-import { ApiRequest } from '../../lib/request';
+import { WalletValidationRequest, WalletValidationResponse } from '../../types.js';
+import { ApiRequest } from '../../lib/request.js';
 
 /**
  * Validate Wallet Address Module
