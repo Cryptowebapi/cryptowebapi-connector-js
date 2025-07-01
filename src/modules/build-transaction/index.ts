@@ -47,34 +47,21 @@ async function buildTransactionWithApi(
 ): Promise<TransactionBuilderResponse> {
   const { network } = request;
 
-  // Import required modules dynamically
-  const [{ getAccountNonce }, { getFeeData }] = await Promise.all([
-    import('../get-account-nonce/index.js'),
-    import('../get-fee-data/index.js')
-  ]);
+  // Import required module dynamically
+  const { getBlockchainMeta } = await import('../get-blockchain-meta/index.js');
 
   // Get wallet address from private key
   const walletAddress = await getAddressFromPrivateKey(request.privateKey, network);
 
-  // Get nonce from CryptoWebAPI
-  const nonceResponse = await getAccountNonce({
+  // Get blockchain metadata (nonce, fee data, etc.) from CryptoWebAPI
+  const metaResponse = await getBlockchainMeta({
     network,
     address: walletAddress,
     mode: request.mode,
   }, apiRequest);
 
-  if (!nonceResponse.success) {
-    throw new Error(`Failed to get nonce: ${nonceResponse.message}`);
-  }
-
-  // Get fee data from CryptoWebAPI
-  const feeDataResponse = await getFeeData({
-    network,
-    mode: request.mode,
-  }, apiRequest);
-
-  if (!feeDataResponse.success) {
-    throw new Error(`Failed to get fee data: ${feeDataResponse.message}`);
+  if (!metaResponse.success) {
+    throw new Error(`Failed to get blockchain metadata: ${metaResponse.message}`);
   }
 
   // Create enhanced options with API data
@@ -86,8 +73,10 @@ async function buildTransactionWithApi(
     mode: request.mode,
     contractAddress: request.contractAddress,
     contractDecimal: request.contractDecimal,
-    nonce: nonceResponse.data.nonce,
-    gasPrice: feeDataResponse.data.gasPrice,
+    ...(metaResponse.data.nonce !== undefined && { nonce: metaResponse.data.nonce }),
+    gasPrice: metaResponse.data.gasPrice,
+    ...(metaResponse.data.maxFeePerGas && { maxFeePerGas: metaResponse.data.maxFeePerGas }),
+    ...(metaResponse.data.maxPriorityFeePerGas && { maxPriorityFeePerGas: metaResponse.data.maxPriorityFeePerGas }),
   };
 
   // Use the factory to build transaction with API data

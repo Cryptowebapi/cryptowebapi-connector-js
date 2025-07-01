@@ -23,10 +23,8 @@ import {
   SendTransactionData,
   AddressFromMnemonicRequest,
   AddressFromMnemonicResponse,
-  FeeDataRequest,
-  FeeDataResponse,
-  AccountNonceRequest,
-  AccountNonceResponse,
+  BlockchainMetaRequest,
+  BlockchainMetaResponse,
   TransactionBuilderRequest,
   TransactionBuilderResponse,
 } from './types.js';
@@ -147,33 +145,21 @@ export class CryptoWebApiClient {
   }
 
   // ========================================
-  // FEE DATA AND NONCE ENDPOINTS
+  // BLOCKCHAIN META ENDPOINT
   // ========================================
 
   /**
-   * Get Fee Data
-   * Retrieves current network fee information including gas price
-   * GET /api/blockchain/feeData
+   * Get Blockchain Meta
+   * Retrieves transaction metadata needed for building and signing transactions.
+   * Provides current fee data, gas limits, chain ID, nonce, and balance information.
+   * GET /api/blockchain/transaction-meta
    *
-   * @param request - Fee data request parameters
-   * @returns Promise<FeeDataResponse> - Current fee data for the network
+   * @param request - Blockchain meta request parameters
+   * @returns Promise<BlockchainMetaResponse> - Transaction metadata including fee data, gas limits, chain ID, nonce, and balance
    */
-  async getFeeData(request: FeeDataRequest): Promise<FeeDataResponse> {
-    const { getFeeData: moduleGetFeeData } = await import('./modules/get-fee-data/index.js');
-    return moduleGetFeeData(request, this.apiRequest);
-  }
-
-  /**
-   * Get Account Nonce
-   * Retrieves the current nonce for an account address
-   * GET /api/blockchain/nonce
-   *
-   * @param request - Account nonce request parameters
-   * @returns Promise<AccountNonceResponse> - Current nonce for the address
-   */
-  async getAccountNonce(request: AccountNonceRequest): Promise<AccountNonceResponse> {
-    const { getAccountNonce: moduleGetAccountNonce } = await import('./modules/get-account-nonce/index.js');
-    return moduleGetAccountNonce(request, this.apiRequest);
+  async getBlockchainMeta(request: BlockchainMetaRequest): Promise<BlockchainMetaResponse> {
+    const { getBlockchainMeta: moduleGetBlockchainMeta } = await import('./modules/get-blockchain-meta/index.js');
+    return moduleGetBlockchainMeta(request, this.apiRequest);
   }
 
   // ========================================

@@ -20,6 +20,8 @@ export interface BuildTransactionOptions {
   nonce?: number;
   gasPrice?: string;
   gasLimit?: string;
+  maxFeePerGas?: string;
+  maxPriorityFeePerGas?: string;
 }
 
 /**

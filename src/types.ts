@@ -267,35 +267,34 @@ export interface AddressFromMnemonicResponse {
 }
 
 // Fee Data Types
-export interface FeeDataRequest {
+// Blockchain Meta Types (replaces FeeData and AccountNonce)
+export interface BlockchainMetaRequest {
   network: SupportedNetwork;
+  address?: string; // Optional: get account-specific data like nonce and balance
   mode?: 'mainnet' | 'testnet';
 }
 
-export interface FeeDataResponse {
+export interface BlockchainMetaResponse {
   success: boolean;
   message: string;
   network: SupportedNetwork;
   data: {
+    // Fee data
     gasPrice: string;
     maxFeePerGas?: string;
     maxPriorityFeePerGas?: string;
-  };
-}
-
-// Account Nonce Types
-export interface AccountNonceRequest {
-  network: SupportedNetwork;
-  address: string;
-  mode?: 'mainnet' | 'testnet';
-}
-
-export interface AccountNonceResponse {
-  success: boolean;
-  message: string;
-  network: SupportedNetwork;
-  data: {
-    nonce: number;
+    gasLimit?: {
+      transfer: string;
+      contractCall: string;
+      tokenTransfer: string;
+    };
+    // Chain information
+    chainId?: number;
+    blockHeight?: number;
+    // Account-specific data (when address is provided)
+    nonce?: number;
+    balance?: string;
+    balanceFormatted?: string;
   };
 }
 
