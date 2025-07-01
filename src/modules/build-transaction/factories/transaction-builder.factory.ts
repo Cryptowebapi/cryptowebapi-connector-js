@@ -64,7 +64,7 @@ export class TransactionBuilderFactory {
       case 'bnb':
         return 'Please install: npm install ethers';
       case 'bitcoin':
-        return 'Please install: npm install bitcoinjs-lib bip39 tiny-secp256k1 ecpair';
+        return 'Please install: npm install bitcoinjs-lib @noble/secp256k1';
       case 'tron':
         return 'Please install: npm install ethers bip39';
       default:

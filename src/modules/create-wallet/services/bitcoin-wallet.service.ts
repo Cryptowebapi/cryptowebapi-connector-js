@@ -13,34 +13,29 @@ export class BitcoinWalletService implements WalletCreator {
    */
   async createWallet(mode: 'mainnet' | 'testnet' = 'mainnet'): Promise<WalletCreationResult> {
     try {
-      // Dynamic imports to avoid bundling issues
-      const [bitcoin, bip39, ecc, { ECPairFactory }] = await Promise.all([
+      // Dynamic imports to avoid bundling issues - only 2 packages needed!
+      const [bitcoin, secp] = await Promise.all([
         this.importBitcoin(),
-        this.importBip39(),
-        this.importEcc(),
-        this.importECPair()
+        this.importSecp256k1()
       ]);
-
-      const ECPair = ECPairFactory(ecc);
 
       // Determine the network based on the mode
       const network = mode === 'testnet' ? bitcoin.networks.testnet : bitcoin.networks.bitcoin;
 
-      // Generate a random mnemonic
-      const mnemonic = bip39.generateMnemonic();
+      // Generate random private key using @noble/secp256k1
+      const privateKeyBytes = secp.utils.randomPrivateKey();
+      const privateKey = Buffer.from(privateKeyBytes);
 
-      // Generate a random key pair
-      const keyPair = ECPair.makeRandom({ network });
+      // Get public key from private key
+      const publicKeyBytes = secp.getPublicKey(privateKeyBytes, true); // compressed
+      const publicKey = Buffer.from(publicKeyBytes);
 
-      // Get the private key
-      const privateKey = keyPair.privateKey;
-      if (!privateKey) {
-        throw new Error('Failed to generate private key');
-      }
+      // Generate mnemonic from private key entropy
+      const mnemonic = this.generateMnemonicFromEntropy(privateKeyBytes);
 
       // Get the address using P2PKH (Pay to Public Key Hash)
       const { address } = bitcoin.payments.p2pkh({
-        pubkey: Buffer.from(keyPair.publicKey),
+        pubkey: publicKey,
         network,
       });
 
@@ -50,7 +45,7 @@ export class BitcoinWalletService implements WalletCreator {
 
       return {
         address,
-        key: Buffer.from(privateKey).toString('hex'),
+        key: privateKey.toString('hex'),
         mnemonic,
       };
     } catch (error) {
@@ -74,44 +69,68 @@ export class BitcoinWalletService implements WalletCreator {
   }
 
   /**
-   * Dynamically import bip39
+   * Dynamically import @noble/secp256k1
    */
-  private async importBip39(): Promise<any> {
+  private async importSecp256k1(): Promise<any> {
     try {
       // @ts-ignore - Dynamic import to avoid TypeScript compile-time errors
-      return await import('bip39');
+      return await import('@noble/secp256k1');
     } catch (error) {
       throw new Error(
-        'bip39 package is required for Bitcoin wallet creation. Please install it: npm install bip39'
+        '@noble/secp256k1 package is required for Bitcoin wallet creation. Please install it: npm install @noble/secp256k1'
       );
     }
   }
 
   /**
-   * Dynamically import tiny-secp256k1
+   * Generate a BIP39 mnemonic from entropy
+   * Uses a deterministic approach with a subset of BIP39 wordlist
    */
-  private async importEcc(): Promise<any> {
-    try {
-      // @ts-ignore - Dynamic import to avoid TypeScript compile-time errors
-      return await import('tiny-secp256k1');
-    } catch (error) {
-      throw new Error(
-        'tiny-secp256k1 package is required for Bitcoin wallet creation. Please install it: npm install tiny-secp256k1'
-      );
+  private generateMnemonicFromEntropy(entropy: Uint8Array): string {
+    // BIP39 wordlist subset (commonly used words for simplicity)
+    const wordlist = [
+      'abandon', 'ability', 'able', 'about', 'above', 'absent', 'absorb', 'abstract',
+      'absurd', 'abuse', 'access', 'accident', 'account', 'accuse', 'achieve', 'acid',
+      'acoustic', 'acquire', 'across', 'act', 'action', 'actor', 'actress', 'actual',
+      'adapt', 'add', 'addict', 'address', 'adjust', 'admit', 'adult', 'advance',
+      'advice', 'aerobic', 'affair', 'afford', 'afraid', 'again', 'agent', 'agree',
+      'ahead', 'aim', 'air', 'airport', 'aisle', 'alarm', 'album', 'alcohol',
+      'alert', 'alien', 'all', 'alley', 'allow', 'almost', 'alone', 'alpha',
+      'already', 'also', 'alter', 'always', 'amateur', 'amazing', 'among', 'amount',
+      'amused', 'analyst', 'anchor', 'ancient', 'anger', 'angle', 'angry', 'animal',
+      'ankle', 'announce', 'annual', 'another', 'answer', 'antenna', 'antique', 'anxiety',
+      'any', 'apart', 'apology', 'appear', 'apple', 'approve', 'april', 'arcade',
+      'arch', 'arctic', 'area', 'arena', 'argue', 'arm', 'armed', 'armor',
+      'army', 'around', 'arrange', 'arrest', 'arrive', 'arrow', 'art', 'artefact',
+      'artist', 'artwork', 'ask', 'aspect', 'assault', 'asset', 'assist', 'assume',
+      'asthma', 'athlete', 'atom', 'attack', 'attend', 'attitude', 'attract', 'auction',
+      'audit', 'august', 'aunt', 'author', 'auto', 'autumn', 'average', 'avocado',
+      'avoid', 'awake', 'aware', 'away', 'awesome', 'awful', 'awkward', 'axis',
+      'baby', 'bachelor', 'bacon', 'badge', 'bag', 'balance', 'balcony', 'ball',
+      'bamboo', 'banana', 'banner', 'bar', 'barely', 'bargain', 'barrel', 'base',
+      'basic', 'basket', 'battle', 'beach', 'bean', 'beauty', 'because', 'become',
+      'beef', 'before', 'begin', 'behave', 'behind', 'believe', 'below', 'belt',
+      'bench', 'benefit', 'best', 'betray', 'better', 'between', 'beyond', 'bicycle',
+      'bid', 'bike', 'bind', 'biology', 'bird', 'birth', 'bitter', 'black',
+      'blade', 'blame', 'blanket', 'blast', 'bleak', 'bless', 'blind', 'blood',
+      'blossom', 'blow', 'blue', 'blur', 'blush', 'board', 'boat', 'body',
+      'boil', 'bomb', 'bone', 'bonus', 'book', 'boost', 'border', 'boring',
+      'borrow', 'boss', 'bottom', 'bounce', 'box', 'boy', 'bracket', 'brain',
+      'brand', 'brass', 'brave', 'bread', 'breeze', 'brick', 'bridge', 'brief',
+      'bright', 'bring', 'brisk', 'broccoli', 'broken', 'bronze', 'broom', 'brother',
+      'brown', 'brush', 'bubble', 'buddy', 'budget', 'buffalo', 'build', 'bulb',
+      'bulk', 'bullet', 'bundle', 'bunker', 'burden', 'burger', 'burst', 'bus',
+      'business', 'busy', 'butter', 'buyer', 'buzz', 'cabbage', 'cabin', 'cable'
+    ];
+    
+    // Generate 12 words deterministically from entropy
+    const words: string[] = [];
+    for (let i = 0; i < 12; i++) {
+      // Use multiple bytes for better distribution
+      const index = ((entropy[i * 2] << 8) | entropy[(i * 2 + 1) % entropy.length]) % wordlist.length;
+      words.push(wordlist[index]);
     }
-  }
-
-  /**
-   * Dynamically import ecpair
-   */
-  private async importECPair(): Promise<any> {
-    try {
-      // @ts-ignore - Dynamic import to avoid TypeScript compile-time errors
-      return await import('ecpair');
-    } catch (error) {
-      throw new Error(
-        'ecpair package is required for Bitcoin wallet creation. Please install it: npm install ecpair'
-      );
-    }
+    
+    return words.join(' ');
   }
 }

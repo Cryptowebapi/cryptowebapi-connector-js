@@ -47,17 +47,15 @@ const balance = await client.getWalletBalance({
 
 ### 2. Direct Module Imports (Advanced)
 ```typescript
-import { createWallet, getWalletBalance, ApiRequest } from 'cryptowebapi-connector-js';
+import { createWallet, getWalletBalance } from 'cryptowebapi-connector-js';
 
 // Create wallet locally (no API needed)
 const wallet = await createWallet({ network: 'ethereum' });
 
-// Use API modules with a custom API request instance
-const apiRequest = new ApiRequest({ apiKey: 'your-key' });
-const balance = await getWalletBalance(
-  { network: 'ethereum', address: wallet.address },
-  apiRequest
-);
+// Use API modules (need apiRequest instance)
+const client = new CryptoWebApiClient({ apiKey: 'your-key' });
+const apiRequest = (client as any).apiRequest;
+const balance = await getWalletBalance(request, apiRequest);
 ```
 
 ### 3. Factory Pattern (Expert)
@@ -121,19 +119,12 @@ const client = new CryptoWebApiClient({
 });
 ```
 
-## 🎯 Quick Test
-
-Run the included demo to see all modules in action:
-
-```bash
-node demo.cjs
-```
-
 ## 📚 Examples
 
-See the [examples](./examples/) folder for comprehensive examples:
-- `basic-usage.ts` - Complete usage guide (client, modules, transactions)
-- `build-transaction-modular.ts` - Advanced transaction building patterns
+See the [examples](./examples/) folder for more comprehensive examples:
+- `basic-usage.ts` - Basic API usage
+- `modular-usage.ts` - Modular import patterns
+- `transaction-builder.ts` - Transaction building
 
 ## 🛠️ Development
 

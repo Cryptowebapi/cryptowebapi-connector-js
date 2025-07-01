@@ -18,6 +18,7 @@
     "build:types": "tsc -p tsconfig.types.json",
     "clean": "rimraf dist",
     "dev": "tsc --watch",
+    "demo": "node demo.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
