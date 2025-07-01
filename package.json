@@ -51,13 +51,34 @@
   },
   "homepage": "https://cryptowebapi.com",
   "dependencies": {
-    "axios": "^1.6.0"
+    "axios": "^1.6.0",
+    "keccak": "^3.0.4"
   },
   "peerDependencies": {
-    "ethers": "^6.0.0"
+    "bip32": "^4.0.0",
+    "bip39": "^3.1.0",
+    "bitcoinjs-lib": "^6.1.7",
+    "ethers": "^6.0.0",
+    "js-sha3": "^0.8.0",
+    "tiny-secp256k1": "^2.2.4"
   },
   "peerDependenciesMeta": {
     "ethers": {
+      "optional": true
+    },
+    "bitcoinjs-lib": {
+      "optional": true
+    },
+    "bip39": {
+      "optional": true
+    },
+    "bip32": {
+      "optional": true
+    },
+    "tiny-secp256k1": {
+      "optional": true
+    },
+    "js-sha3": {
       "optional": true
     }
   },

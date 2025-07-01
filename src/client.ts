@@ -134,14 +134,22 @@ export class CryptoWebApiClient {
   }
 
   /**
-   * Generate Address from Mnemonic
-   * POST /api/wallet/address-from-mnemonic
+   * Recover wallet information from mnemonic phrase (offline)
+   * This function works offline and does not require an API call
    */
-  async generateAddressFromMnemonic(
-    request: AddressFromMnemonicRequest
-  ): Promise<AddressFromMnemonicResponse> {
-    const { generateAddressFromMnemonic: moduleGenerateAddressFromMnemonic } = await import('./modules/generate-address-from-mnemonic/index.js');
-    return moduleGenerateAddressFromMnemonic(request, this.apiRequest);
+  async recoverFromMnemonic(
+    network: SupportedNetwork,
+    mnemonic: string,
+    options?: { mode?: 'mainnet' | 'testnet' }
+  ): Promise<{
+    network: string;
+    address: string;
+    publicKey: string;
+    privateKey: string;
+    path: string;
+  }> {
+    const { recoverFromMnemonic: moduleRecoverFromMnemonic } = await import('./modules/recover-from-mnemonic/index.js');
+    return moduleRecoverFromMnemonic(network, mnemonic, options);
   }
 
   // ========================================
