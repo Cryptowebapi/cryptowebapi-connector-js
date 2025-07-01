@@ -11,4 +11,7 @@ export default {
   coverageReporters: ['text', 'lcov', 'html'],
   setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup.ts'],
   testPathIgnorePatterns: ['<rootDir>/src/__tests__/setup.ts'],
+  moduleNameMapper: {
+    '^(.+)\\.js$': '$1',
+  },
 };

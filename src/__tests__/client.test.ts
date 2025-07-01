@@ -132,9 +132,9 @@ describe('CryptoWebApiClient', () => {
     });
   });
 
-  describe('generateAddressFromMnemonic endpoint', () => {
-    it('should have generateAddressFromMnemonic method', () => {
-      expect(typeof client.generateAddressFromMnemonic).toBe('function');
+  describe('recoverFromMnemonic endpoint', () => {
+    it('should have recoverFromMnemonic method', () => {
+      expect(typeof client.recoverFromMnemonic).toBe('function');
     });
   });
 });

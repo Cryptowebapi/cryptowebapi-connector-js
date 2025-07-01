@@ -5,19 +5,14 @@ jest.mock('../modules/build-transaction', () => ({
   buildTransaction: jest.fn()
 }));
 
-jest.mock('../modules/get-fee-data', () => ({
-  getFeeData: jest.fn()
-}));
-
-jest.mock('../modules/get-account-nonce', () => ({
-  getAccountNonce: jest.fn()
+jest.mock('../modules/get-blockchain-meta', () => ({
+  getBlockchainMeta: jest.fn()
 }));
 
 describe('CryptoWebApiClient - Transaction Builder (Simplified)', () => {
   let client: CryptoWebApiClient;
   let mockBuildTransaction: jest.Mock;
-  let mockGetFeeData: jest.Mock;
-  let mockGetAccountNonce: jest.Mock;
+  let mockGetBlockchainMeta: jest.Mock;
 
   beforeEach(() => {
     client = new CryptoWebApiClient({
@@ -26,13 +21,11 @@ describe('CryptoWebApiClient - Transaction Builder (Simplified)', () => {
 
     // Get references to the mocked functions
     mockBuildTransaction = require('../modules/build-transaction').buildTransaction;
-    mockGetFeeData = require('../modules/get-fee-data').getFeeData;
-    mockGetAccountNonce = require('../modules/get-account-nonce').getAccountNonce;
+    mockGetBlockchainMeta = require('../modules/get-blockchain-meta').getBlockchainMeta;
 
     // Reset mocks
     mockBuildTransaction.mockReset();
-    mockGetFeeData.mockReset();
-    mockGetAccountNonce.mockReset();
+    mockGetBlockchainMeta.mockReset();
   });
 
   afterEach(() => {
@@ -84,54 +77,70 @@ describe('CryptoWebApiClient - Transaction Builder (Simplified)', () => {
     });
   });
 
-  describe('getFeeData', () => {
-    it('should delegate to getFeeData module', async () => {
+  describe('getBlockchainMeta', () => {
+    it('should delegate to getBlockchainMeta module for fee data and account nonce', async () => {
       const mockResponse = {
         success: true,
-        message: 'Fee data retrieved',
+        message: 'Blockchain metadata retrieved',
         network: 'ethereum',
-        data: { gasPrice: '20000000000' },
+        data: {
+          feeData: {
+            gasPrice: '20000000000',
+            maxFeePerGas: '30000000000',
+            maxPriorityFeePerGas: '2000000000',
+          },
+          gasLimit: '21000',
+          chainId: '11155111',
+          nonce: 42,
+          balance: '1.5',
+        },
       };
 
-      mockGetFeeData.mockResolvedValue(mockResponse);
+      mockGetBlockchainMeta.mockResolvedValue(mockResponse);
 
-      const result = await client.getFeeData({
+      const result = await client.getBlockchainMeta({
         network: 'ethereum',
+        address: '0x1234567890123456789012345678901234567890',
         mode: 'mainnet',
       });
 
-      expect(mockGetFeeData).toHaveBeenCalledWith(
+      expect(mockGetBlockchainMeta).toHaveBeenCalledWith(
         {
           network: 'ethereum',
+          address: '0x1234567890123456789012345678901234567890',
           mode: 'mainnet',
         },
         expect.any(Object) // apiRequest object
       );
       expect(result).toEqual(mockResponse);
     });
-  });
 
-  describe('getAccountNonce', () => {
-    it('should delegate to getAccountNonce module', async () => {
+    it('should delegate to getBlockchainMeta module for fee data only', async () => {
       const mockResponse = {
         success: true,
-        message: 'Nonce retrieved',
+        message: 'Blockchain metadata retrieved',
         network: 'ethereum',
-        data: { nonce: 42 },
+        data: {
+          feeData: {
+            gasPrice: '20000000000',
+            maxFeePerGas: '30000000000',
+            maxPriorityFeePerGas: '2000000000',
+          },
+          gasLimit: '21000',
+          chainId: '11155111',
+        },
       };
 
-      mockGetAccountNonce.mockResolvedValue(mockResponse);
+      mockGetBlockchainMeta.mockResolvedValue(mockResponse);
 
-      const result = await client.getAccountNonce({
+      const result = await client.getBlockchainMeta({
         network: 'ethereum',
-        address: '0x1234567890123456789012345678901234567890',
         mode: 'mainnet',
       });
 
-      expect(mockGetAccountNonce).toHaveBeenCalledWith(
+      expect(mockGetBlockchainMeta).toHaveBeenCalledWith(
         {
           network: 'ethereum',
-          address: '0x1234567890123456789012345678901234567890',
           mode: 'mainnet',
         },
         expect.any(Object) // apiRequest object
